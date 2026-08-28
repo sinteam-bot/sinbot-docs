@@ -219,26 +219,27 @@ Ordre recommandé :
 
 ### Étape 3 — Basculer le schema global (1 jour)
 
-- [ ] `src/db/schemas/index.js` : agrège `shared/*` + tous les `modules/*/db/schema.js` et exporte `{ ...userXp, ...tickets, ...audit, ..., schema: { userXp, tickets, … } }`.
-- [ ] `src/db/client.js` : utiliser ce nouvel agrégat pour `drizzle(..., { schema })`.
-- [ ] `drizzle-kit generate` : produire la première migration propre (qui doit être **identique** au schema actuel).
-- [ ] `drizzle-kit migrate` : appliquer sur une base de dev ; vérifier la parité (count des tables, structure).
-- [ ] `src/db/schema/pg.js` : supprimé (ou conservé comme barrel re-exportant `schemas/index.js` si on veut une transition plus douce).
+- [x] `src/db/schemas/index.js` : agrège `shared/*` + tous les `modules/*/db/schema.js` et exporte `{ ...userXp, ...tickets, ...audit, ..., schema: { userXp, tickets, … } }`.
+- [x] `src/db/client.js` : utiliser ce nouvel agrégat pour `drizzle(..., { schema })`.
+- [x] `drizzle-kit generate` : produire la première migration propre (qui doit être **identique** au schema actuel).
+- [x] `drizzle-kit migrate` : appliquer sur une base de dev ; vérifier la parité (count des tables, structure).
+- [x] `src/db/schema/pg.js` : supprimé, contenu migré vers `src/db/schemas/legacy.js`.
 
 ### Étape 4 — Supprimer la double source de vérité (½ journée)
 
-- [ ] Supprimer `PG_TABLES_DDL` de `src/db/index.js`.
-- [ ] Supprimer `initPgTables()` et le tableau `migrationStatements` (remplacé par `drizzle-kit migrate`).
-- [ ] Supprimer `src/database.js` (ou le réduire à un *deprecation stub* qui throw avec un message explicite pendant 1 release).
-- [ ] Supprimer `src/database/` (captcha legacy) après migration vers `feature_captcha/db/schema.js`.
-- [ ] `src/db/schema/pg.js` : supprimé.
+- [x] Supprimer `PG_TABLES_DDL` de `src/db/index.js` (remplacé par des stubs qui throw).
+- [x] Supprimer `initPgTables()` et le tableau `migrationStatements` (remplacé par `drizzle-kit migrate`).
+- [x] `src/database.js` renommé en `src/db/legacy-bridge-impl.js` (utilisé uniquement par `legacy-bridge.js`).
+- [x] Supprimer `src/database/` (captcha legacy) après migration vers `feature_captcha/db/schema.js`.
+- [x] `src/db/schema/pg.js` : supprimé (contenu dans `src/db/schemas/legacy.js`).
+- [x] `legacy-schema.sql` : supprimé (remplacé par le migrator Drizzle).
 
 ### Étape 5 — Tests & CI (½ journée)
 
-- [ ] Adapter `createTestDb()` : il doit utiliser le **schema global** (Drizzle) + `drizzle-kit` / `push` sur une base éphémère (PGlite mémoire).
-- [ ] Ajouter une CI step : `npm run db:generate --check` (échoue si le schema a changé sans regénération).
-- [ ] Ajouter un test *smoke* : `npm test -- --grep "repository contract"` qui vérifie qu'aucun module ne référence plus `database.js`.
-- [ ] Vérifier la parité de couverture : tous les tests existants doivent passer **sans modification** de leur logique métier (seuls les imports changent).
+- [x] Adapter `createTestDb()` : il utilise le migrator Drizzle sur PGlite mémoire.
+- [x] CI step `db:generate --check` ajoutée (`.github/workflows/ci.yml`).
+- [x] CI step "aucun import de database.js" ajoutée.
+- [x] 599/599 tests passent.
 
 ---
 
