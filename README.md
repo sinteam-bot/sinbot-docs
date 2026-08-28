@@ -18,6 +18,7 @@ Bienvenue dans la documentation du bot Discord **Chienne**. Ce dossier regroupe 
 - [`features/logs-stats.md`](./features/logs-stats.md) — Logs détaillés & dashboard de statistiques (P2)
 - [`features/giveaways-polls.md`](./features/giveaways-polls.md) — Giveaways & sondages (P3)
 - [`features/welcome-advanced.md`](./features/welcome-advanced.md) — Bienvenue avancée (cartes, autoroles) (P3)
+- [`features/birthdays.md`](./features/birthdays.md) — Système d'anniversaires avec cron quotidien, mode public/privé, cooldown, cadeaux (Phase 7)
 
 ### Plan d'intégration
 
