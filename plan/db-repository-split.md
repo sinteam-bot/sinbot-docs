@@ -320,7 +320,7 @@ git commit -m "feat(<x>): add <table> for <feature>"
 | 4 | `drizzle-kit generate` produit 0 fichier (schema et migrations sont en accord) | ✅ | `db:generate` retourne "No schema changes, nothing to migrate". Baseline 0000 regénérée avec les types `bigint`. CI durcie : fait échouer le build en cas de diff. |
 | 5 | `drizzle-kit migrate` reproduit exactement la structure de la base actuelle | ⚠️ | La baseline est cohérente avec le code legacy (les tests passent) mais l'équivalence stricte avec la base de prod n'a pas été testée. À valider lors du premier déploiement (cf. §10.1). |
 | 6 | Tous les tests passent (`npm test`) sans modification de leur logique métier | ✅ | 604/604. Seuls 3 tests adaptés au niveau des imports. |
-| 7 | Aucune fonction de `database.js` ne subsiste hors de son repository cible | ✅ | 70/70 fonctions sont consommées via des repositories cibles (19 modules + 6 transverses). Les implémentations vivent toujours dans `legacy-bridge-impl.js` (1 source unique, DRY) mais **chaque fonction est appelée uniquement depuis son repository de destination**. Refactor en Drizzle natif à faire au fil de l'eau (cf. §10.2). |
+| 7 | Aucune fonction de `database.js` ne subsiste hors de son repository cible | ✅ | **Suppression complète de `legacy-bridge.js` (179 lignes) et `legacy-bridge-impl.js` (2108 lignes)**. Les 70 fonctions legacy sont désormais **implémentées nativement** dans leurs repositories cibles (modules + transverses `shared/`). 0 fonction en doublon, 0 bridge. |
 | 8 | `docs/architecture/data-model.md` mis à jour pour refléter le nouveau découpage | ✅ | Réécrit : décrit l'architecture par module + shared/, liste les 50 tables par module, conventions Drizzle, workflow migrations. |
 
 ---
@@ -336,9 +336,10 @@ git commit -m "feat(<x>): add <table> for <feature>"
 | 4. Supprimer les doublons | 0.5 j | 0.5 j | ✅ |
 | 5. Tests & CI | 0.5 j | 0.5 j | ✅ |
 | 4b. Rebase 0000 (types bigint) | — | 0.25 j | ✅ |
-| 7. Migrer les 70 fonctions legacy (wrappers) | — | 1 j | ✅ |
+| 7. Migrer les 70 fonctions legacy (natif) | — | 1.5 j | ✅ |
 | 8. Mettre à jour data-model.md | — | 0.5 j | ✅ |
-| **Total** | 7-9 j | **6.75 j** | — |
+| 7b. Supprimer legacy-bridge (vraie suppression) | — | 0.5 j | ✅ |
+| **Total** | 7-9 j | **8.25 j** | — |
 
 > Compatible avec la roadmap existante (cf. `docs/plan/roadmap.md`) : peut s'intercaler en **Phase 0bis** avant la Phase 1 (Automod), pour qu'Automod soit directement écrit *à destination* du nouveau pattern.
 
@@ -354,18 +355,10 @@ git commit -m "feat(<x>): add <table> for <feature>"
 
 **Durée** : 0.5 j (à faire une fois en pré-prod).
 
-### 10.2 Migration des fonctions legacy en Drizzle natif (amélioration continue)
+### 10.2 Enregistrement des repositories comme `providers` (NestJS-like)
 
-**État actuel** : les 70 fonctions legacy sont consommées via des **wrappers Drizzle** (cf. critère 7 ✅) qui pointent vers `legacy-bridge-impl.js`. Aucune fonction n'est appelée hors de son repository de destination.
+**État actuel** : les repositories existent et sont utilisés, mais sont consommés via `require(...)` direct ou instanciation, pas via le container NestJS-like.
 
-**Amélioration optionnelle** : porter chaque fonction en Drizzle natif (au lieu de SQL legacy via le bridge) au fil des évolutions. Pas bloquant.
-
-**Durée** : 0 j (peut être fait en continu).
-
-### 10.3 Enregistrement des repositories comme `providers` (NestJS-like)
-
-**État actuel** : les repositories existent mais sont consommés via `require(...)` direct, pas via le container NestJS-like.
-
-**Action optionnelle** : ajouter chaque repository aux `providers` de son module (cf. `feature_xp-level/xp-level.module.js` qui le fait déjà) et résoudre via `container.resolve(...)` dans les services.
+**Action optionnelle** : ajouter chaque repository aux `providers` de son module (cf. `feature_xp-level/xp-level.module.js` qui le fait déjà pour `XPLevelRepository`) et résoudre via `container.resolve(...)` dans les services.
 
 **Durée** : 1 j (refactor cosmétique, non bloquant).

@@ -379,7 +379,9 @@ Toutes les tables cache (membres, salons, rôles, messages, threads, emojis) ont
 ## 9. État actuel & dette technique
 
 - ✅ Schéma Drizzle par module (19 modules, 50 tables)
-- ✅ Schéma transverse dans `db/schemas/shared/` (5 fichiers de schéma, 6 repositories)
+- ✅ Schéma transverse dans `db/schemas/shared/` (5 fichiers de schéma, 9 repositories)
 - ✅ Migrations versionnées via `drizzle-kit` (`src/db/migrations/0000_*.sql`)
 - ✅ Tests passent (604/604) avec PGlite + migrator Drizzle
-- ⚠️ Dette : les **70 fonctions legacy** de `src/db/legacy-bridge-impl.js` sont consommées via des **wrappers** dans chaque module/repository (cf. critère 7 du plan). Migration en Drizzle natif à faire au fil de l'eau.
+- ✅ **70 fonctions legacy portées nativement** dans les repositories cibles (modules + `shared/`)
+- ✅ **`legacy-bridge.js` et `legacy-bridge-impl.js` supprimés** (2108 lignes effacées)
+- ⚠️ Dette : la validation de l'équivalence avec la base de prod n'a pas été testée (à faire au prochain déploiement).
