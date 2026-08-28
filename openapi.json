@@ -77,6 +77,10 @@
       "description": "Endpoints de General API"
     },
     {
+      "name": "Invites",
+      "description": "Endpoints du module Invites"
+    },
+    {
       "name": "Reaction Roles",
       "description": "Endpoints du module Reaction Roles"
     },
@@ -4593,6 +4597,239 @@
         "summary": "GET /api/api/inventory/:userId",
         "description": "Route Express: `GET /api/api/inventory/:userId`",
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant userId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/api/invites/{guildId}/blacklist": {
+      "get": {
+        "tags": [
+          "General API"
+        ],
+        "summary": "GET /api/api/invites/:guildId/blacklist",
+        "description": "Route Express: `GET /api/api/invites/:guildId/blacklist`",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/api/invites/{guildId}/leaderboard": {
+      "get": {
+        "tags": [
+          "General API"
+        ],
+        "summary": "GET /api/api/invites/:guildId/leaderboard",
+        "description": "Route Express: `GET /api/api/invites/:guildId/leaderboard`",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord (optionnel)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50
+            },
+            "description": "Nombre maximum d'éléments"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Numéro de page"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/api/invites/{guildId}/{userId}": {
+      "get": {
+        "tags": [
+          "General API"
+        ],
+        "summary": "GET /api/api/invites/:guildId/:userId",
+        "description": "Route Express: `GET /api/api/invites/:guildId/:userId`",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "userId",
             "in": "path",
@@ -15669,6 +15906,242 @@
         "description": "Gestionnaire: `EconomyController.getInventory`",
         "operationId": "EconomyController_getInventory",
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant userId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/invites/{guildId}/blacklist": {
+      "get": {
+        "tags": [
+          "Invites"
+        ],
+        "summary": "Get blacklist",
+        "description": "Gestionnaire: `InvitesController.getBlacklist`",
+        "operationId": "InvitesController_getBlacklist",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/invites/{guildId}/leaderboard": {
+      "get": {
+        "tags": [
+          "Invites"
+        ],
+        "summary": "Get leaderboard",
+        "description": "Gestionnaire: `InvitesController.getLeaderboard`",
+        "operationId": "InvitesController_getLeaderboard",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord (optionnel)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50
+            },
+            "description": "Nombre maximum d'éléments"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Numéro de page"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/api/invites/{guildId}/{userId}": {
+      "get": {
+        "tags": [
+          "Invites"
+        ],
+        "summary": "Get user stats",
+        "description": "Gestionnaire: `InvitesController.getUserStats`",
+        "operationId": "InvitesController_getUserStats",
+        "parameters": [
+          {
+            "name": "guildId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant guildId",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "userId",
             "in": "path",
