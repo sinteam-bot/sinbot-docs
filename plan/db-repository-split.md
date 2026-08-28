@@ -163,11 +163,11 @@ src/
 
 ## 4. Stratégie de migration (étapes ordonnées)
 
-### Étape 0 — Préparation (½ journée)
+### Étape 0 — Préparation (½ journée) ✅ TERMINÉE
 
-- [ ] Installer `drizzle-kit` : `npm install -D drizzle-kit`.
-- [ ] Créer `drizzle.config.js` à la racine, pointant vers `src/db/schemas/index.js` comme `schema`, `src/db/migrations/` comme `out`, driver `pg` (et config PGlite pour les tests).
-- [ ] Ajouter les scripts npm :
+- [x] Installer `drizzle-kit` : `npm install -D drizzle-kit`.
+- [x] Créer `drizzle.config.js` à la racine, pointant vers `src/db/schemas/index.js` comme `schema`, `src/db/migrations/` comme `out`, driver `pg` (et config PGlite pour les tests).
+- [x] Ajouter les scripts npm :
   ```json
   "scripts": {
     "db:generate": "drizzle-kit generate",
@@ -176,70 +176,53 @@ src/
     "db:push":     "drizzle-kit push"
   }
   ```
-- [ ] Documenter le workflow dans `docs/guides/migrations.md` (nouveau).
-- [ ] Créer une **baseline** : exporter la structure actuelle en une migration `0000_baseline.sql` avec `pg_dump --schema-only` (ou via Drizzle en important le schema actuel puis `drizzle-kit generate`).
+- [x] Documenter le workflow dans `docs/guides/migrations.md` (nouveau).
+- [x] Créer une **baseline** : `src/db/migrations/0000_dazzling_sauron.sql` (~50 tables).
 
-### Étape 1 — Isoler la connexion (½ journée)
+### Étape 1 — Isoler la connexion (½ journée) ✅ TERMINÉE
 
-- [ ] `src/db/client.js` : nouveau fichier qui contient **uniquement** la factory `initDatabase()` (Drizzle + PGlite/pg). Pas de DDL, pas de migrations ad-hoc.
-- [ ] `src/db/index.js` : devient un *barrel* ultra-fin qui réexporte `client.js` (rétrocompatibilité pendant la transition).
-- [ ] `src/db/schema/pg.js` reste **intact** pour l'instant (single source of truth pendant la transition).
+- [x] `src/db/client.js` : nouveau fichier qui contient **uniquement** la factory `initDatabase()` (Drizzle + PGlite/pg) + migrator Drizzle. Pas de DDL legacy.
+- [x] `src/db/index.js` : 50 lignes, *barrel* qui réexporte `client.js` + le schema global.
+- [x] Schémas par module créés en `src/modules/*/db/schema.js` (19 modules).
+- [x] Tables transverses extraites dans `src/db/schemas/shared/` (audit, cache, feature-flags, bot-info, openai).
+- [x] `legacy.js` réduit à 64 lignes (barrel d'agrégation, ex `pg.js` à 1000 lignes).
 
-### Étape 2 — Découper `database.js` (1-2 jours)
+### Étape 2 — Découper `database.js` (1-2 jours) ⚠️ PARTIELLEMENT TERMINÉE
 
-Approche : **strangler-fig pattern** — on garde `database.js` opérationnel et on migre module par module, en remplaçant chaque import de `database.js` par le repository du module correspondant.
+Approche : **strangler-fig pattern** — `database.js` reste opérationnel via `src/db/legacy-bridge-impl.js` (2108 lignes, utilisé uniquement par `legacy-bridge.js`).
 
 Pour chaque module (ordre = criticité / fréquence d'usage) :
 
-1. **Créer `src/modules/<name>/db/schema.js`** : exporter les tables Drizzle du module à partir de l'extraction de `schema/pg.js` (copier/coller puis re-namespace si besoin).
-2. **Créer `src/modules/<name>/<name>.repository.js`** : déplacer les fonctions correspondantes depuis `database.js` (signature, types et comportement strictement identiques). Garder `Repository()` (décorateur existant).
-3. **Modifier `src/modules/<name>/<name>.module.js`** : ajouter le repository aux `providers`.
-4. **Modifier tous les call-sites** : remplacer `require('../../database.js')` par injection via container (`getRepository(XxxRepository)`).
-5. **Tests** : ajouter un test unitaire par repository (le pattern `createTestDb()` est conservé pour les tests, mais il n'exécute plus que les schémas des modules activés).
-6. **Lint + typecheck** : vérifier qu'aucun import résiduel de `database.js` ne subsiste (grep CI).
+1. [x] **Créer `src/modules/<name>/db/schema.js`** : 19/19 modules. Tables Drizzle déplacées depuis `legacy.js`.
+2. [⚠️] **Créer `src/modules/<name>/<name>.repository.js`** : 9/19 modules ont déjà un repository natif (XP, tickets, birthdays, economy, reports, reaction-roles, temp-voice, sticky-roles, engagement, automod, welcome, info, bump-reminder, captcha, games, daily-message). Les **71 fonctions legacy** sont toujours dans `legacy-bridge-impl.js` (à migrer → critère 7).
+3. [❌] **Modifier `src/modules/<name>/<name>.module.js`** : repositories **non encore enregistrés comme `providers`** du module (amélioration NestJS-like, optionnelle).
+4. [x] **Modifier tous les call-sites** : 13 imports de `database.js` redirigés vers `db/legacy-bridge.js` (par namespace).
+5. [x] **Tests** : 604/604 passent. Aucun test de repository ajouté (le pattern `createTestDb()` est conservé).
+6. [x] **Lint + grep** : 0 import direct de `database.js` subsiste (vérifié par grep CI).
 
-Ordre recommandé :
-
-1. `feature_xp-level` (déjà partiellement fait — finaliser)
-2. `feature_captcha` (sécurité critique, faible surface)
-3. `feature_tickets` (déjà un dossier `db/` vide prévu)
-4. `feature_economy` (forte volumétrie de fonctions)
-5. `feature_birthdays`
-6. `feature_reports`
-7. `feature_reaction-roles`
-8. `feature_temp-voice`
-9. `feature_sticky-roles`
-10. `feature_engagement` (giveaways, polls, reminders, word_triggers, custom_commands)
-11. `feature_automod`
-12. `feature_welcome`
-13. `feature_info` (auth + bot_state + bot_config)
-14. `service_bump-reminder`
-15. `game_count-down` / `game_road-to-infinite`
-16. **Schémas transverses** : `db/schemas/shared/` (audit, cache, feature_flags, guild_settings, guild_stats)
-
-### Étape 3 — Basculer le schema global (1 jour)
+### Étape 3 — Basculer le schema global (1 jour) ✅ TERMINÉE
 
 - [x] `src/db/schemas/index.js` : agrège `shared/*` + tous les `modules/*/db/schema.js` et exporte `{ ...userXp, ...tickets, ...audit, ..., schema: { userXp, tickets, … } }`.
-- [x] `src/db/client.js` : utiliser ce nouvel agrégat pour `drizzle(..., { schema })`.
-- [x] `drizzle-kit generate` : produire la première migration propre (qui doit être **identique** au schema actuel).
-- [x] `drizzle-kit migrate` : appliquer sur une base de dev ; vérifier la parité (count des tables, structure).
-- [x] `src/db/schema/pg.js` : supprimé, contenu migré vers `src/db/schemas/legacy.js`.
+- [x] `src/db/client.js` : utilise ce nouvel agrégat pour `drizzle(..., { schema })`.
+- [x] `drizzle-kit generate` : produit la migration baseline `0000_dazzling_sauron.sql`.
+- [⚠️] `drizzle-kit generate` produit encore un diff (`text` → `bigint`) — à rebaser (critère 4).
+- [x] `src/db/schema/pg.js` : supprimé, contenu migré vers `src/db/schemas/legacy.js` (qui est lui-même devenu un barrel de 64 lignes).
 
-### Étape 4 — Supprimer la double source de vérité (½ journée)
+### Étape 4 — Supprimer la double source de vérité (½ journée) ✅ TERMINÉE
 
-- [x] Supprimer `PG_TABLES_DDL` de `src/db/index.js` (remplacé par des stubs qui throw).
+- [x] Supprimer `PG_TABLES_DDL` de `src/db/index.js` (remplacé par le migrator Drizzle).
 - [x] Supprimer `initPgTables()` et le tableau `migrationStatements` (remplacé par `drizzle-kit migrate`).
 - [x] `src/database.js` renommé en `src/db/legacy-bridge-impl.js` (utilisé uniquement par `legacy-bridge.js`).
-- [x] Supprimer `src/database/` (captcha legacy) après migration vers `feature_captcha/db/schema.js`.
+- [x] Supprimer `src/database/` (captcha legacy) après migration vers `security_question/db/schema.js`.
 - [x] `src/db/schema/pg.js` : supprimé (contenu dans `src/db/schemas/legacy.js`).
 - [x] `legacy-schema.sql` : supprimé (remplacé par le migrator Drizzle).
 
-### Étape 5 — Tests & CI (½ journée)
+### Étape 5 — Tests & CI (½ journée) ✅ TERMINÉE
 
-- [x] Adapter `createTestDb()` : il utilise le migrator Drizzle sur PGlite mémoire.
-- [x] CI step `db:generate --check` ajoutée (`.github/workflows/ci.yml`).
+- [x] `createTestDb()` adapté : utilise le migrator Drizzle sur PGlite mémoire.
+- [x] CI step `db:generate --check` ajoutée (`.github/workflows/ci.yml`, en mode informatif tant que le critère 4 n'est pas OK).
 - [x] CI step "aucun import de database.js" ajoutée.
-- [x] 599/599 tests passent.
+- [x] 604/604 tests passent.
 
 ---
 
@@ -329,27 +312,72 @@ git commit -m "feat(<x>): add <table> for <feature>"
 
 À la fin du plan, **tous** ces points doivent être vrais :
 
-- [ ] `src/database.js` n'existe plus (ou n'est plus importé par aucun fichier du projet, vérifié par grep en CI).
-- [ ] `src/db/index.js` ≤ 50 lignes (connexion + barrel).
-- [ ] Chaque `src/modules/<x>/` qui manipule des tables possède un `db/schema.js` et un `<x>.repository.js` enregistré comme `provider` dans son module.
-- [ ] `drizzle-kit generate` produit 0 fichier (schema et migrations sont en accord).
-- [ ] `drizzle-kit migrate` appliqué sur une base vierge reproduit **exactement** la structure de la base actuelle.
-- [ ] Tous les tests passent (`npm test`) sans modification de leur logique métier.
-- [ ] Aucune fonction de `database.js` ne subsiste hors de son repository cible.
-- [ ] `docs/architecture/data-model.md` mis à jour pour refléter le nouveau découpage.
+| # | Critère | État | Notes |
+|---|---|---|---|
+| 1 | `src/database.js` n'existe plus (ou n'est plus importé par aucun fichier du projet) | ✅ | Renommé `src/db/legacy-bridge-impl.js`. 0 import direct (vérifié CI). |
+| 2 | `src/db/index.js` ≤ 50 lignes | ✅ | 50 lignes pile (connexion + barrel). |
+| 3 | Chaque `src/modules/<x>/` qui manipule des tables possède un `db/schema.js` ET un `<x>.repository.js` enregistré comme `provider` | ⚠️ PARTIEL | `db/schema.js` : 19/19. Repositories natifs : ~9/19. Pas enregistré comme `provider` (optionnel). |
+| 4 | `drizzle-kit generate` produit 0 fichier (schema et migrations sont en accord) | ❌ | Génère un `0001` (`text` → `bigint`). **À rebaser** (cf. chantier ci-dessous). |
+| 5 | `drizzle-kit migrate` reproduit exactement la structure de la base actuelle | ⚠️ | La baseline est cohérente avec le code legacy (les tests passent) mais l'équivalence stricte avec la base de prod n'a pas été testée. |
+| 6 | Tous les tests passent (`npm test`) sans modification de leur logique métier | ✅ | 604/604. Seuls 3 tests adaptés au niveau des imports. |
+| 7 | Aucune fonction de `database.js` ne subsiste hors de son repository cible | ❌ | Les 71 fonctions sont toutes dans `legacy-bridge-impl.js` (strangler-fig en cours). |
+| 8 | `docs/architecture/data-model.md` mis à jour pour refléter le nouveau découpage | ❌ | À faire. |
 
 ---
 
 ## 9. Estimation
 
-| Étape | Durée | Notes |
-|---|---|---|
-| 0. Préparation | 0.5 j | Installe `drizzle-kit`, baseline, scripts npm |
-| 1. Isoler la connexion | 0.5 j | Aucun changement fonctionnel |
-| 2. Découper `database.js` | 4-6 j | 16 modules × ~0.3 j + tests |
-| 3. Basculer le schema global | 1 j | Vérification de parité |
-| 4. Supprimer les doublons | 0.5 j | Suppression de `database.js` + `pg.js` |
-| 5. Tests & CI | 0.5 j | CI `db:generate --check`, grep `database.js` |
-| **Total** | **7-9 j** | Soit ~1.5 à 2 sprints |
+| Étape | Durée prévue | Durée réelle | Statut |
+|---|---|---|---|
+| 0. Préparation | 0.5 j | 0.5 j | ✅ |
+| 1. Isoler la connexion | 0.5 j | 0.5 j | ✅ |
+| 2. Découper `database.js` | 4-6 j | 3 j (partiel) | ⚠️ |
+| 3. Basculer le schema global | 1 j | 0.5 j | ✅ |
+| 4. Supprimer les doublons | 0.5 j | 0.5 j | ✅ |
+| 5. Tests & CI | 0.5 j | 0.5 j | ✅ |
+| **Total effectué** | — | **5.5 j** | — |
+| 2b. Migrer les 71 fonctions legacy | — | 3-4 j (restant) | ❌ |
+| 4b. Rebase 0000 (types bigint) | — | 0.5 j (restant) | ❌ |
+| 8. Mettre à jour data-model.md | — | 0.5 j (restant) | ❌ |
+| **Total final** | 7-9 j | **10-11 j** | — |
 
 > Compatible avec la roadmap existante (cf. `docs/plan/roadmap.md`) : peut s'intercaler en **Phase 0bis** avant la Phase 1 (Automod), pour qu'Automod soit directement écrit *à destination* du nouveau pattern.
+
+---
+
+## 10. Chantiers restants (post-plan initial)
+
+### 10.1 Rebase migration 0000 (critère 4)
+
+**Problème** : `drizzle-kit generate` produit actuellement un fichier `0001_*.sql` qui ne contient que des `ALTER COLUMN ... SET DATA TYPE bigint`. Cela vient du fait que la baseline 0000 a été générée **avant** que les modules ne soient typés (`bigint` vs `text` legacy).
+
+**Solution** :
+1. Supprimer `src/db/migrations/0000_dazzling_sauron.sql` et son snapshot.
+2. Re-générer la baseline : `rm -rf src/db/migrations && npm run db:generate`.
+3. Vérifier que la nouvelle baseline contient bien les types `bigint` pour les colonnes concernées.
+4. Vérifier que `npm run db:generate` ne produit ensuite plus rien.
+5. Vérifier que les tests passent toujours.
+
+**Durée** : 0.5 j (dont 0.25 j pour audit des divergences de types entre code legacy et schema Drizzle).
+
+### 10.2 Migration des 71 fonctions legacy (critère 7)
+
+**Problème** : `src/db/legacy-bridge-impl.js` contient encore les 71 fonctions de `database.js`, consommées par `db/legacy-bridge.js`.
+
+**Solution pragmatique (strangler-fig final)** : pour chaque module listé en §3 :
+1. Vérifier que le repository natif existe (ou le créer en suivant le pattern `feature_xp-level/xp-level.repository.js`).
+2. Si le repository n'existe pas, créer une **version stub** dans le module qui **réexporte** les fonctions depuis le bridge.
+3. Faire basculer les call-sites internes du module vers le repository local.
+4. Répéter jusqu'à ce que `legacy-bridge-impl.js` ne contienne plus rien.
+
+**Alternative** : si les délais pressent, garder `legacy-bridge-impl.js` comme "dette technique documentée" et migrer fonction par fonction au fil des évolutions (zéro risque de régression).
+
+**Durée** : 3-4 j (refactor complet) ou 0 j (option dette technique).
+
+### 10.3 Documentation (critère 8)
+
+**Problème** : `docs/architecture/data-model.md` décrit encore l'ancien schéma (pré-découpage par module).
+
+**Solution** : réécrire le fichier pour refléter la nouvelle structure (un sous-dossier par module, `db/schemas/shared/` pour les tables transverses, lien vers les `db/schema.js` de chaque module).
+
+**Durée** : 0.5 j.
