@@ -50,6 +50,7 @@
 | F-17 | Messages récurrents | 11 | 🟡 | 1 | 5 | 3 | Planification cron-like |
 | F-18 | Sauvegardes serveur | 12 | 🔴 | 0 | 3 | 3 | Sensible (rate limits), effort élevé |
 | F-19 | Interserveurs | 14 | 🔴 | 3+ | 10+ | 5+ | Premium-only Draftbot, GDPR, opt-in |
+| F-20 | Migration TypeScript | — | 🔴 | — | — | — | Planifiée (cf. [`typescript-migration.md`](./typescript-migration.md)) — lancer dans 3-6 mois |
 
 ## Estimation globale
 
