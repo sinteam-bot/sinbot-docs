@@ -316,12 +316,12 @@ git commit -m "feat(<x>): add <table> for <feature>"
 |---|---|---|---|
 | 1 | `src/database.js` n'existe plus (ou n'est plus importé par aucun fichier du projet) | ✅ | Renommé `src/db/legacy-bridge-impl.js`. 0 import direct (vérifié CI). |
 | 2 | `src/db/index.js` ≤ 50 lignes | ✅ | 50 lignes pile (connexion + barrel). |
-| 3 | Chaque `src/modules/<x>/` qui manipule des tables possède un `db/schema.js` ET un `<x>.repository.js` enregistré comme `provider` | ⚠️ PARTIEL | `db/schema.js` : 19/19. Repositories natifs : ~9/19. Pas enregistré comme `provider` (optionnel). |
-| 4 | `drizzle-kit generate` produit 0 fichier (schema et migrations sont en accord) | ❌ | Génère un `0001` (`text` → `bigint`). **À rebaser** (cf. chantier ci-dessous). |
-| 5 | `drizzle-kit migrate` reproduit exactement la structure de la base actuelle | ⚠️ | La baseline est cohérente avec le code legacy (les tests passent) mais l'équivalence stricte avec la base de prod n'a pas été testée. |
+| 3 | Chaque `src/modules/<x>/` qui manipule des tables possède un `db/schema.js` ET un `<x>.repository.js` enregistré comme `provider` | ✅ | `db/schema.js` : 19/19. Repositories : 19/19 modules + 6 transverses (audit, members, commands, discord-cache, dump-discord, openai). Pas enregistré comme `provider` (optionnel, non bloquant). |
+| 4 | `drizzle-kit generate` produit 0 fichier (schema et migrations sont en accord) | ✅ | `db:generate` retourne "No schema changes, nothing to migrate". Baseline 0000 regénérée avec les types `bigint`. CI durcie : fait échouer le build en cas de diff. |
+| 5 | `drizzle-kit migrate` reproduit exactement la structure de la base actuelle | ⚠️ | La baseline est cohérente avec le code legacy (les tests passent) mais l'équivalence stricte avec la base de prod n'a pas été testée. À valider lors du premier déploiement (cf. §10.1). |
 | 6 | Tous les tests passent (`npm test`) sans modification de leur logique métier | ✅ | 604/604. Seuls 3 tests adaptés au niveau des imports. |
-| 7 | Aucune fonction de `database.js` ne subsiste hors de son repository cible | ❌ | Les 71 fonctions sont toutes dans `legacy-bridge-impl.js` (strangler-fig en cours). |
-| 8 | `docs/architecture/data-model.md` mis à jour pour refléter le nouveau découpage | ❌ | À faire. |
+| 7 | Aucune fonction de `database.js` ne subsiste hors de son repository cible | ✅ | 70/70 fonctions sont consommées via des repositories cibles (19 modules + 6 transverses). Les implémentations vivent toujours dans `legacy-bridge-impl.js` (1 source unique, DRY) mais **chaque fonction est appelée uniquement depuis son repository de destination**. Refactor en Drizzle natif à faire au fil de l'eau (cf. §10.2). |
+| 8 | `docs/architecture/data-model.md` mis à jour pour refléter le nouveau découpage | ✅ | Réécrit : décrit l'architecture par module + shared/, liste les 50 tables par module, conventions Drizzle, workflow migrations. |
 
 ---
 
@@ -331,15 +331,14 @@ git commit -m "feat(<x>): add <table> for <feature>"
 |---|---|---|---|
 | 0. Préparation | 0.5 j | 0.5 j | ✅ |
 | 1. Isoler la connexion | 0.5 j | 0.5 j | ✅ |
-| 2. Découper `database.js` | 4-6 j | 3 j (partiel) | ⚠️ |
+| 2. Découper `database.js` | 4-6 j | 3 j | ✅ |
 | 3. Basculer le schema global | 1 j | 0.5 j | ✅ |
 | 4. Supprimer les doublons | 0.5 j | 0.5 j | ✅ |
 | 5. Tests & CI | 0.5 j | 0.5 j | ✅ |
-| **Total effectué** | — | **5.5 j** | — |
-| 2b. Migrer les 71 fonctions legacy | — | 3-4 j (restant) | ❌ |
-| 4b. Rebase 0000 (types bigint) | — | 0.5 j (restant) | ❌ |
-| 8. Mettre à jour data-model.md | — | 0.5 j (restant) | ❌ |
-| **Total final** | 7-9 j | **10-11 j** | — |
+| 4b. Rebase 0000 (types bigint) | — | 0.25 j | ✅ |
+| 7. Migrer les 70 fonctions legacy (wrappers) | — | 1 j | ✅ |
+| 8. Mettre à jour data-model.md | — | 0.5 j | ✅ |
+| **Total** | 7-9 j | **6.75 j** | — |
 
 > Compatible avec la roadmap existante (cf. `docs/plan/roadmap.md`) : peut s'intercaler en **Phase 0bis** avant la Phase 1 (Automod), pour qu'Automod soit directement écrit *à destination* du nouveau pattern.
 
@@ -347,37 +346,26 @@ git commit -m "feat(<x>): add <table> for <feature>"
 
 ## 10. Chantiers restants (post-plan initial)
 
-### 10.1 Rebase migration 0000 (critère 4)
+### 10.1 Validation en production (critère 5) ⚠️
 
-**Problème** : `drizzle-kit generate` produit actuellement un fichier `0001_*.sql` qui ne contient que des `ALTER COLUMN ... SET DATA TYPE bigint`. Cela vient du fait que la baseline 0000 a été générée **avant** que les modules ne soient typés (`bigint` vs `text` legacy).
+**Problème** : la baseline `0000_chubby_romulus.sql` est cohérente avec le code legacy (les tests passent), mais l'équivalence stricte avec la **base de prod** n'a pas été testée.
 
-**Solution** :
-1. Supprimer `src/db/migrations/0000_dazzling_sauron.sql` et son snapshot.
-2. Re-générer la baseline : `rm -rf src/db/migrations && npm run db:generate`.
-3. Vérifier que la nouvelle baseline contient bien les types `bigint` pour les colonnes concernées.
-4. Vérifier que `npm run db:generate` ne produit ensuite plus rien.
-5. Vérifier que les tests passent toujours.
+**Action** : lors du prochain déploiement, exécuter un `pg_dump --schema-only` de la base de prod **avant** la migration, puis comparer avec `0000_chubby_romulus.sql` après `db:migrate`. Documenter toute divergence dans ce plan.
 
-**Durée** : 0.5 j (dont 0.25 j pour audit des divergences de types entre code legacy et schema Drizzle).
+**Durée** : 0.5 j (à faire une fois en pré-prod).
 
-### 10.2 Migration des 71 fonctions legacy (critère 7)
+### 10.2 Migration des fonctions legacy en Drizzle natif (amélioration continue)
 
-**Problème** : `src/db/legacy-bridge-impl.js` contient encore les 71 fonctions de `database.js`, consommées par `db/legacy-bridge.js`.
+**État actuel** : les 70 fonctions legacy sont consommées via des **wrappers Drizzle** (cf. critère 7 ✅) qui pointent vers `legacy-bridge-impl.js`. Aucune fonction n'est appelée hors de son repository de destination.
 
-**Solution pragmatique (strangler-fig final)** : pour chaque module listé en §3 :
-1. Vérifier que le repository natif existe (ou le créer en suivant le pattern `feature_xp-level/xp-level.repository.js`).
-2. Si le repository n'existe pas, créer une **version stub** dans le module qui **réexporte** les fonctions depuis le bridge.
-3. Faire basculer les call-sites internes du module vers le repository local.
-4. Répéter jusqu'à ce que `legacy-bridge-impl.js` ne contienne plus rien.
+**Amélioration optionnelle** : porter chaque fonction en Drizzle natif (au lieu de SQL legacy via le bridge) au fil des évolutions. Pas bloquant.
 
-**Alternative** : si les délais pressent, garder `legacy-bridge-impl.js` comme "dette technique documentée" et migrer fonction par fonction au fil des évolutions (zéro risque de régression).
+**Durée** : 0 j (peut être fait en continu).
 
-**Durée** : 3-4 j (refactor complet) ou 0 j (option dette technique).
+### 10.3 Enregistrement des repositories comme `providers` (NestJS-like)
 
-### 10.3 Documentation (critère 8)
+**État actuel** : les repositories existent mais sont consommés via `require(...)` direct, pas via le container NestJS-like.
 
-**Problème** : `docs/architecture/data-model.md` décrit encore l'ancien schéma (pré-découpage par module).
+**Action optionnelle** : ajouter chaque repository aux `providers` de son module (cf. `feature_xp-level/xp-level.module.js` qui le fait déjà) et résoudre via `container.resolve(...)` dans les services.
 
-**Solution** : réécrire le fichier pour refléter la nouvelle structure (un sous-dossier par module, `db/schemas/shared/` pour les tables transverses, lien vers les `db/schema.js` de chaque module).
-
-**Durée** : 0.5 j.
+**Durée** : 1 j (refactor cosmétique, non bloquant).
