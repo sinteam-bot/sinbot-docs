@@ -1,6 +1,6 @@
-# Documentation Chienne Bot
+# Documentation Bot
 
-Bienvenue dans la documentation du bot Discord **Chienne**. Ce dossier regroupe l'ensemble des documents techniques : architecture, guides de développement, références API et plans d'évolution.
+Bienvenue dans la documentation du bot Discord. Ce dossier regroupe l'ensemble des documents techniques : architecture, guides de développement, références API et plans d'évolution.
 
 ## Sommaire
 
@@ -22,7 +22,7 @@ Bienvenue dans la documentation du bot Discord **Chienne**. Ce dossier regroupe 
 
 ### Audit vs DraftBot
 
-- [`audit/audit-draftbot.md`](./audit/audit-draftbot.md) — **Analyse comparative** : status de chaque feature Draftbot dans Chienne, taux de couverture, roadmap recommandée
+- [`audit/audit-draftbot.md`](./audit/audit-draftbot.md) — **Analyse comparative** : status de chaque feature Draftbot, taux de couverture, roadmap recommandée
 - [`audit/draftbot-feature-list.md`](./audit/draftbot-feature-list.md) — **Liste exhaustive** des 35 features Draftbot avec liens vers la doc, status et implémentation
 - [`audit/migration-impact.md`](./audit/migration-impact.md) — **Impact technique** (tables / endpoints / commands) pour chaque feature à ajouter
 - [`audit/backlog.md`](./audit/backlog.md) — **Backlog actionnable** priorisé P0/P1/P2/P3 avec estimations
@@ -53,7 +53,7 @@ Bienvenue dans la documentation du bot Discord **Chienne**. Ce dossier regroupe 
 
 ## À propos du projet
 
-**Chienne** est un bot Discord modulaire construit autour :
+Un bot Discord modulaire construit autour :
 
 - **discord.js v14** pour l'API Discord
 - **Express 5** pour le dashboard web et les webhooks

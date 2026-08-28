@@ -6,7 +6,7 @@
 
 ## 1. Vision
 
-Faire de **Chienne** un bot Discord modulaire comparable à Draftbot, avec :
+Faire un bot Discord modulaire comparable à Draftbot, avec :
 
 - Un **registre de features** activables par serveur (multi-guild ready)
 - Un **dashboard web** pour tout piloter sans redémarrer

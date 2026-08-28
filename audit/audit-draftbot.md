@@ -1,4 +1,4 @@
-# Audit — Comparaison DraftBot vs Chienne
+# Audit — Comparaison DraftBot vs Bot
 
 > **Date** : 2026-08-27
 > **Source** : https://www.draftbot.fr/docs
@@ -153,7 +153,7 @@ Classement par **impact utilisateur / effort** (V/E = valeur / effort) :
 
 ## 6. Conclusion
 
-**Chienne couvre ~63% des features publiques Draftbot**, avec un focus marqué sur :
+**Bot couvre ~63% des features publiques Draftbot**, avec un focus marqué sur :
 - ✅ **Sécurité** (5/6 features) — la plus complète
 - ✅ **Engagement** (4/5) — il manque l'économie
 - ✅ **Accueil des membres** (4/5) — l'écart est sur les variantes du captcha
@@ -170,4 +170,4 @@ Classement par **impact utilisateur / effort** (V/E = valeur / effort) :
 
 - [`draftbot-feature-list.md`](./draftbot-feature-list.md) — table exhaustive avec liens vers la doc Draftbot
 - [`migration-impact.md`](./migration-impact.md) — impact des features à ajouter sur le schéma DB et l'API
-- [`../features/`](../features/) — docs détaillées des features Chienne déjà livrées
+- [`../features/`](../features/) — docs détaillées des features Bot déjà livrées

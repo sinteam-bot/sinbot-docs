@@ -4,7 +4,7 @@
 
 ## 1. Objectif
 
-Implémenter le système d'anniversaires de Draftbot dans Chienne :
+Implémenter le système d'anniversaires de Draftbot dans le Bot :
 - Permettre aux membres de définir leur date d'anniversaire
 - Célébrer automatiquement les anniversaires du jour avec une annonce
 - Donner un rôle temporaire + des cadeaux le jour J

@@ -24,7 +24,7 @@ NODE_ENV=production
 API_KEY=changez_cette_cle_secrete
 
 # Database
-DATABASE_URL=postgresql://user:pass@db:5432/chienne
+DATABASE_URL=postgresql://user:pass@db:5432/bot
 # ou pour SQLite :
 DB_PATH=./data/bot.db
 
@@ -60,9 +60,9 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: chienne
+      POSTGRES_USER: bot
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: chienne
+      POSTGRES_DB: bot
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -152,13 +152,13 @@ class HealthController {
 
 ```bash
 # Cron quotidien
-0 3 * * * pg_dump -U chienne chienne | gzip > /backups/chienne-$(date +\%F).sql.gz
+0 3 * * * pg_dump -U bot bot | gzip > /backups/bot-$(date +\%F).sql.gz
 ```
 
 ### SQLite
 
 ```bash
-0 3 * * * sqlite3 /app/data/bot.db ".backup '/backups/chienne-$(date +\%F).db'"
+0 3 * * * sqlite3 /app/data/bot.db ".backup '/backups/bot-$(date +\%F).db'"
 ```
 
 ## 9. Monitoring (recommandé)
@@ -197,7 +197,7 @@ git checkout HEAD~1
 docker compose up -d --build bot
 
 # 3. Rollback DB si nécessaire
-psql -U chienne -d chienne -f /backups/chienne-2026-08-26.sql
+psql -U bot -d bot -f /backups/bot-2026-08-26.sql
 ```
 
 ## 12. Checklist pré-déploiement

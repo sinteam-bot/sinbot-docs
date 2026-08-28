@@ -5,12 +5,12 @@
 >
 > Ce document liste **toutes** les features publiques Draftbot, avec :
 > - Le lien direct vers la doc
-> - Le status dans Chienne (✅ / 🟡 / ❌ / 🔶)
+> - Le status dans le Bot (✅ / 🟡 / ❌ / 🔶)
 > - Une référence au commit / module qui l'implémente (ou `docs/plan/` si manquant)
 
 ## 1. Accueil des membres
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Arrivées & départs | [link](https://www.draftbot.fr/docs/accueil-des-membres/arrivees-et-departs) | 🟡 | `feature_cards` (Phase 6) + `feature_welcome` (legacy) — carte SVG de welcome/leave, `CardEventListeners` |
 | Gestion des rôles (auto-rôles) | [link](https://www.draftbot.fr/docs/accueil-des-membres/roles-automatiques) | 🟡 | `CardEventListeners.onMemberAdd` applique `config.auto_roles`. Manque : règles conditionnelles + panel dédié |
@@ -20,7 +20,7 @@
 
 ## 2. Engagement
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Niveaux (XP) | [link](https://www.draftbot.fr/docs/engagement/niveaux) | ✅ | `feature_xp-level` (Phase 2) — [`docs/features/xp-level.md`](../features/xp-level.md) |
 | Économie (monnaie) | [link](https://www.draftbot.fr/docs/engagement/economie) | ❌ | **Planifié Phase 9** — [`audit-draftbot.md#phase-9`](./audit-draftbot.md#phase-9--conomie--inventaire) |
@@ -30,7 +30,7 @@
 
 ## 3. Jeux & événements
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Giveaways | [link](https://www.draftbot.fr/docs/jeux-et-evenements/giveaways) | ✅ | `feature_engagement` (Phase 5) — [`docs/features/giveaways-polls.md`](../features/giveaways-polls.md) |
 | Sondages (polls) | [link](https://www.draftbot.fr/docs/jeux-et-evenements/giveaways) | ✅ | `feature_engagement` (Phase 5) — [`docs/features/giveaways-polls.md`](../features/giveaways-polls.md) |
@@ -42,7 +42,7 @@
 
 ## 4. Communauté
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Suggestions | [link](https://www.draftbot.fr/docs/communaute/suggestions) | ❌ | **Planifié Phase 12** |
 | Tickets | [link](https://www.draftbot.fr/docs/communaute/tickets) | ✅ | `feature_tickets` (Phase 3) — [`docs/features/tickets.md`](../features/tickets.md) |
@@ -56,7 +56,7 @@
 
 ## 5. Sécurité
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Modération (commandes) | [link](https://www.draftbot.fr/docs/securite/moderation) | ✅ | `feature_automod` (Phase 1) — [`docs/features/automod.md`](../features/automod.md) |
 | Auto-Modération | [link](https://www.draftbot.fr/docs/securite/auto-moderation) | ✅ | `feature_automod` (Phase 1) — 7 règles + sanctions progressives |
@@ -67,7 +67,7 @@
 
 ## 6. Utilitaires
 
-| Feature | Doc | Status | Implémentation Chienne |
+| Feature | Doc | Status | Implémentation |
 |---|---|:---:|---|
 | Commandes d'informations | [link](https://www.draftbot.fr/docs/utilitaires/commandes-informations) | ❌ | **Planifié Phase 8** (`/serverinfo`, `/userinfo`, `/avatar`, etc.) |
 | Commandes personnalisées | [link](https://www.draftbot.fr/docs/utilitaires/commandes-personnalisees) | ❌ | **Planifié Phase 11** (`/customcmd`) |
@@ -80,10 +80,10 @@
 | Page | Doc | Note |
 |---|---|---|
 | Installation et réglages | [link](https://www.draftbot.fr/docs/installation) | Hors périmètre (l'auto-hébergement est notre modèle) |
-| Variables | [link](https://www.draftbot.fr/docs/autres/variables) | À implémenter comme helper côté Chienne (cf Phase 11) |
+| Variables | [link](https://www.draftbot.fr/docs/autres/variables) | À implémenter comme helper côté Bot (cf Phase 11) |
 | Timestamps | [link](https://www.draftbot.fr/docs/autres/timestamps) | Pas pertinent (utiliser `new Date().toLocaleString('fr-FR')`) |
 | Markdown | [link](https://www.draftbot.fr/docs/autres/markdown) | Documentation utilisateur, pas une feature |
-| Abonnement premium | [link](https://www.draftbot.fr/docs/autres/premium) | N/A — Chienne est gratuit et open |
+| Abonnement premium | [link](https://www.draftbot.fr/docs/autres/premium) | N/A — Bot est gratuit et open |
 
 ## 8. Statistiques finales
 
@@ -103,4 +103,4 @@ Note : la différence avec `audit-draftbot.md` (35 vs 36) vient du fait que la s
 
 - [`audit-draftbot.md`](./audit-draftbot.md) — analyse stratégique + roadmap recommandée
 - [`migration-impact.md`](./migration-impact.md) — impact sur le schéma DB
-- [`../features/`](../features/) — documentation des features Chienne déjà livrées
+- [`../features/`](../features/) — documentation des features Bot déjà livrées
