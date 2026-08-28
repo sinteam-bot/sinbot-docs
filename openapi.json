@@ -3,7 +3,7 @@
   "info": {
     "title": "Bot Discord API",
     "version": "1.0.0",
-    "description": "Spécification OpenAPI 3.1 générée automatiquement depuis les modules et routeurs Express du bot.",
+    "description": "Documentation interactive de l'API REST & Webhooks du bot Discord.",
     "contact": {
       "name": "Bot Support",
       "url": "https://github.com/sinteam-bot/chienne-bot"
@@ -115,6 +115,10 @@
     {
       "name": "Tickets",
       "description": "Endpoints du module Tickets"
+    },
+    {
+      "name": "Webhooks (n8n / External)",
+      "description": "Endpoints de Webhooks (n8n / External)"
     },
     {
       "name": "Welcome System",
@@ -18607,6 +18611,75 @@
         }
       }
     },
+    "/api/stats": {
+      "get": {
+        "tags": [
+          "Statistics & KPIs"
+        ],
+        "summary": "GET /api/stats",
+        "description": "Route Express: `GET /api/stats`",
+        "parameters": [
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "Période en jours"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
     "/api/stats/members": {
       "get": {
         "tags": [
@@ -19829,6 +19902,74 @@
         }
       }
     },
+    "/api/user/{userId}/events": {
+      "get": {
+        "tags": [
+          "General API"
+        ],
+        "summary": "GET /api/user/:userId/events",
+        "description": "Route Express: `GET /api/user/:userId/events`",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "Identifiant userId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "guild_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identifiant du serveur Discord"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
     "/api/users": {
       "get": {
         "tags": [
@@ -20576,6 +20717,115 @@
           },
           "500": {
             "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "General API"
+        ],
+        "summary": "GET /health",
+        "description": "Route Express: `GET /health`",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/webhook/send-message": {
+      "post": {
+        "tags": [
+          "Webhooks (n8n / External)"
+        ],
+        "summary": "POST /webhook/send-message",
+        "description": "Route Express: `POST /webhook/send-message`",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ressource créée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide ou paramètre manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié (clé API ou token manquant/invalide)"
+          },
+          "403": {
+            "description": "Accès refusé (permissions insuffisantes / IP bloquée)"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Données JSON pour /webhook/send-message"
+              }
+            }
           }
         }
       }
