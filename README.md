@@ -20,6 +20,13 @@ Bienvenue dans la documentation du bot Discord **Chienne**. Ce dossier regroupe 
 - [`features/welcome-advanced.md`](./features/welcome-advanced.md) — Bienvenue avancée (cartes, autoroles) (P3)
 - [`features/birthdays.md`](./features/birthdays.md) — Système d'anniversaires avec cron quotidien, mode public/privé, cooldown, cadeaux (Phase 7)
 
+### Audit vs DraftBot
+
+- [`audit/audit-draftbot.md`](./audit/audit-draftbot.md) — **Analyse comparative** : status de chaque feature Draftbot dans Chienne, taux de couverture, roadmap recommandée
+- [`audit/draftbot-feature-list.md`](./audit/draftbot-feature-list.md) — **Liste exhaustive** des 35 features Draftbot avec liens vers la doc, status et implémentation
+- [`audit/migration-impact.md`](./audit/migration-impact.md) — **Impact technique** (tables / endpoints / commands) pour chaque feature à ajouter
+- [`audit/backlog.md`](./audit/backlog.md) — **Backlog actionnable** priorisé P0/P1/P2/P3 avec estimations
+
 ### Plan d'intégration
 
 - [`plan/feature-registry.md`](./plan/feature-registry.md) — **Phase 0** : registre de features, permissions, multi-guild ready
