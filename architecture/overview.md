@@ -122,7 +122,7 @@ moduleManager.registerModules(appModules);
 ## 3. Arborescence du projet
 
 ```
-discord-bot_Chienne/
+discord-bot/
 ├── src/
 │   ├── commands/                # Slash commands legacy (pré-modules)
 │   ├── core/                    # Cœur architectural (Container, EventBus, ModuleManager, decorators)
