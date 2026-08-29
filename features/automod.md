@@ -24,7 +24,7 @@ Fournir un système de modération automatique comparable à Draftbot, configura
 ### 3.1 Arborescence
 
 ```
-src/modules/feature_automod/
+src/modules/security_automod/
 ├── index.js                          # AutoModModule (export principal)
 ├── automod.module.js
 ├── config/
@@ -67,7 +67,7 @@ src/modules/feature_automod/
 ### 3.2 Enregistrement
 
 ```js
-// src/modules/feature_automod/automod.module.js
+// src/modules/security_automod/automod.module.js
 const { Module } = require('../../core');
 const { SpamDetector } = require('./services/spam-detector.service');
 const { RaidDetector } = require('./services/raid-detector.service');
@@ -350,7 +350,7 @@ POST   /api/features/automod/test      # tester une règle sur un message
 // tests/spam-detector.test.js
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { SpamDetector } = require('../src/modules/feature_automod/services/spam-detector.service');
+const { SpamDetector } = require('../src/modules/security_automod/services/spam-detector.service');
 
 test('SpamDetector: détecte 5 messages en 5s', () => {
   const detector = new SpamDetector();

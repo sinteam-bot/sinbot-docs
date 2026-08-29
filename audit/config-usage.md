@@ -76,19 +76,19 @@ Liste des features qui ont un `defaults.js` :
 
 | Fichier (src) | Feature name (c12) | Lignes |
 |---|---|---|
-| `src/modules/feature_automod/config/defaults.js` | `automod` | ~20 |
-| `src/modules/feature_birthdays/config/defaults.js` | `birthdays` | ~10 |
-| `src/modules/feature_economy/config/defaults.js` | `economy` | ~50 |
-| `src/modules/feature_engagement/config/defaults.js` | `engagement` | ~10 |
-| `src/modules/feature_engagement-advanced/config/defaults.js` | `engagement_advanced` | ~15 |
-| `src/modules/feature_info/config/defaults.js` | `info` | ~10 |
-| `src/modules/feature_invites/config/defaults.js` | `invites` | ~50 |
-| `src/modules/feature_logs/config/defaults.js` | `logs` | ~5 |
-| `src/modules/feature_reaction-roles/config/defaults.js` | `reaction-roles` | ~20 |
-| `src/modules/feature_reports/config/defaults.js` | `reports` | ~20 |
-| `src/modules/feature_sticky-roles/config/defaults.js` | `sticky-roles` | ~5 |
-| `src/modules/feature_temp-voice/config/defaults.js` | `temp-voice` | ~20 |
-| `src/modules/feature_tickets/config/defaults.js` | `tickets` | ~30 |
+| `src/modules/security_automod/config/defaults.js` | `automod` | ~20 |
+| `src/modules/engagement_birthdays/config/defaults.js` | `birthdays` | ~10 |
+| `src/modules/engagement_economy/config/defaults.js` | `economy` | ~50 |
+| `src/modules/game_engagement/config/defaults.js` | `engagement` | ~10 |
+| `src/modules/game_engagement-advanced/config/defaults.js` | `engagement_advanced` | ~15 |
+| `src/modules/util_info/config/defaults.js` | `info` | ~10 |
+| `src/modules/util_invites/config/defaults.js` | `invites` | ~50 |
+| `src/modules/security_logs/config/defaults.js` | `logs` | ~5 |
+| `src/modules/community_reaction-roles/config/defaults.js` | `reaction-roles` | ~20 |
+| `src/modules/community_reports/config/defaults.js` | `reports` | ~20 |
+| `src/modules/community_sticky-roles/config/defaults.js` | `sticky-roles` | ~5 |
+| `src/modules/util_temp-voice/config/defaults.js` | `temp-voice` | ~20 |
+| `src/modules/community_tickets/config/defaults.js` | `tickets` | ~30 |
 
 **Total** : ~13 fichiers, ~250 lignes cumulées (à convertir en YAML)
 
@@ -96,7 +96,7 @@ Liste des features qui ont un `defaults.js` :
 
 Plusieurs `config/schema.js` (utilisent `joi` pour valider la config) :
 
-- `src/modules/feature_invites/config/schema.js` (29 lignes)
+- `src/modules/util_invites/config/schema.js` (29 lignes)
 
 ⚠️ **Note** : `joi` n'est **pas installé** comme dépendance. Le code a été supprimé dans une PR précédente. Si on veut réintroduire la validation, on ajoutera `joi` ou on passera à `zod` (compatible avec c12 ?).
 
@@ -149,32 +149,32 @@ Modules qui font leur propre `featureRegistry.define()` dans leur `*.module.js` 
 |---|---|
 | `src/core/feature-registry.js` | `set()` (interne) |
 | `src/modules/feature-declarations.js` | (aucun direct) |
-| `src/modules/feature_automod/events/message-create.listener.js` | check `isEnabled('automod')` |
-| `src/modules/feature_automod/controllers/automod.controller.js` | get state for response |
-| `src/modules/feature_automod/automod.module.js` | (via `define`) |
-| `src/modules/feature_birthdays/birthdays.module.js` | (via `define`) |
-| `src/modules/feature_cards/events/card-listeners.js` | get `cards` config |
-| `src/modules/feature_economy/events/drop-reaction-listener.js` | check `isEnabled('economy')` |
-| `src/modules/feature_economy/economy.module.js` | (via `define`) |
-| `src/modules/feature_engagement/events/interaction-create.listener.js` | get `engagement` config |
-| `src/modules/feature_engagement-advanced/events/message-create.listener.js` | get state |
-| `src/modules/feature_info/info.module.js` | (via `define`) |
-| `src/modules/feature_invites/commands/invite-commands.js` | get config for default values |
-| `src/modules/feature_invites/services/invites.service.js` | get enabled state for guild |
-| `src/modules/feature_invites/invites.module.js` | (via `define`) |
-| `src/modules/feature_logs/events/logs-listeners.js` | check `isEnabled('logs')` |
-| `src/modules/feature_logs/logs.module.js` | (via `define`) |
-| `src/modules/feature_reaction-roles/events/reaction-listener.js` | get state |
-| `src/modules/feature_reaction-roles/reaction-roles.module.js` | (via `define`) |
-| `src/modules/feature_reports/events/reports-listener.js` | get state |
-| `src/modules/feature_reports/reports.module.js` | (via `define`) |
-| `src/modules/feature_sticky-roles/events/sticky-roles-listener.js` | get state |
-| `src/modules/feature_sticky-roles/sticky-roles.module.js` | (via `define`) |
-| `src/modules/feature_temp-voice/events/temp-voice-listener.js` | get state |
-| `src/modules/feature_temp-voice/temp-voice.module.js` | (via `define`) |
-| `src/modules/feature_tickets/events/interaction-create.listener.js` | get state |
-| `src/modules/feature_tickets/events/message-create.listener.js` | get state |
-| `src/modules/feature_tickets/tickets.module.js` | (via `define`) |
+| `src/modules/security_automod/events/message-create.listener.js` | check `isEnabled('automod')` |
+| `src/modules/security_automod/controllers/automod.controller.js` | get state for response |
+| `src/modules/security_automod/automod.module.js` | (via `define`) |
+| `src/modules/engagement_birthdays/birthdays.module.js` | (via `define`) |
+| `src/modules/welcome_cards/events/card-listeners.js` | get `cards` config |
+| `src/modules/engagement_economy/events/drop-reaction-listener.js` | check `isEnabled('economy')` |
+| `src/modules/engagement_economy/economy.module.js` | (via `define`) |
+| `src/modules/game_engagement/events/interaction-create.listener.js` | get `engagement` config |
+| `src/modules/game_engagement-advanced/events/message-create.listener.js` | get state |
+| `src/modules/util_info/info.module.js` | (via `define`) |
+| `src/modules/util_invites/commands/invite-commands.js` | get config for default values |
+| `src/modules/util_invites/services/invites.service.js` | get enabled state for guild |
+| `src/modules/util_invites/invites.module.js` | (via `define`) |
+| `src/modules/security_logs/events/logs-listeners.js` | check `isEnabled('logs')` |
+| `src/modules/security_logs/logs.module.js` | (via `define`) |
+| `src/modules/community_reaction-roles/events/reaction-listener.js` | get state |
+| `src/modules/community_reaction-roles/reaction-roles.module.js` | (via `define`) |
+| `src/modules/community_reports/events/reports-listener.js` | get state |
+| `src/modules/community_reports/reports.module.js` | (via `define`) |
+| `src/modules/community_sticky-roles/events/sticky-roles-listener.js` | get state |
+| `src/modules/community_sticky-roles/sticky-roles.module.js` | (via `define`) |
+| `src/modules/util_temp-voice/events/temp-voice-listener.js` | get state |
+| `src/modules/util_temp-voice/temp-voice.module.js` | (via `define`) |
+| `src/modules/community_tickets/events/interaction-create.listener.js` | get state |
+| `src/modules/community_tickets/events/message-create.listener.js` | get state |
+| `src/modules/community_tickets/tickets.module.js` | (via `define`) |
 | `src/web/featuresRouter.js` | API endpoint |
 
 ---

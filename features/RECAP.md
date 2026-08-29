@@ -41,7 +41,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET /api/automod/*` |
 | **Slash** | `/mod-warn`, `/mod-mute`, `/mod-kick`, `/mod-ban`, `/mod-unban`, `/mod-clear`, `/mod-history` |
 | **Listener** | `messageCreate` (priorité 50) + `guildMemberAdd` (raid) |
-| **Service** | `src/modules/feature_automod/services/automod-engine.service.js` |
+| **Service** | `src/modules/security_automod/services/automod-engine.service.js` |
 | **Tests** | `tests/automod-services.test.js` (24/24) |
 
 ---
@@ -57,7 +57,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET /api/xp` |
 | **Slash** | `/rank`, `/leaderboard` (legacy) |
 | **Listener** | `messageCreate` + `voiceStateUpdate` |
-| **Service** | `src/modules/feature_xp-level/xp-level.service.js` |
+| **Service** | `src/modules/engagement_xp-level/xp-level.service.js` |
 | **Composant partagé** | `CardRendererService` (SVG) — partagé entre welcome + level-up + engagement-advanced (anniversaires) |
 | **Tests** | `tests/feature-xp-level.test.js`, `tests/card-renderer.test.js`, `tests/level-up-service.test.js` (97/97 cumulés) |
 
@@ -74,7 +74,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET/POST /api/tickets`, `/api/tickets/:id`, `/api/tickets/:id/transcript` |
 | **Slash** | (réservé aux admins via REST) |
 | **Listener** | `interactionCreate` (modal) + `messageCreate` (transcript) |
-| **Service** | `src/modules/feature_tickets/services/ticket.service.js` |
+| **Service** | `src/modules/community_tickets/services/ticket.service.js` |
 | **Tests** | `tests/ticket-services.test.js` (15/15) |
 
 ---
@@ -114,7 +114,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET/POST /api/giveaways`, `/api/polls`, `/api/polls/:id/votes` |
 | **Slash** | `/giveaway-start`, `/giveaway-end`, `/giveaway-reroll`, `/giveaway-list`, `/giveaway-cancel`, `/poll-create`, `/poll-end`, `/poll-list`, `/poll-delete` |
 | **Listener** | `interactionCreate` (boutons) + `Cron * * * * *` (tirages giveaways到期, polls到期) |
-| **Service** | `src/modules/feature_engagement/` (giveaway + poll services, repository partagé) |
+| **Service** | `src/modules/game_engagement/` (giveaway + poll services, repository partagé) |
 | **Tests** | `tests/engagement-services.test.js` (24/24) |
 
 ---
@@ -126,7 +126,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | | |
 |---|---|
 | **But** | Générateur SVG réutilisable (welcome, level-up, anniversaires) — pas de dépendance native |
-| **Service** | `src/modules/feature_cards/services/card-renderer.service.js` (6 templates : welcome, join, leave, level_up, giveaway, generic) |
+| **Service** | `src/modules/welcome_cards/services/card-renderer.service.js` (6 templates : welcome, join, leave, level_up, giveaway, generic) |
 | **Tests** | `tests/card-renderer.test.js` (35/35) |
 
 ### Welcome
@@ -136,7 +136,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **But** | Message de bienvenue + auto-rôles + carte SVG optionnelle + listenner `guildMemberAdd` |
 | **Tables** | `welcome_config` |
 | **Endpoints** | `GET/PATCH /api/welcome` |
-| **Service** | `src/modules/feature_welcome/welcome.service.js` |
+| **Service** | `src/modules/welcome_welcome/welcome.service.js` |
 | **Tests** | `tests/feature-welcome.test.js` (1 fail pré-existant : bug fakeRepo sur `welcome_message` field) |
 
 ### Daily message (IA)
@@ -195,7 +195,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET/POST /api/birthdays/*` (settings, today, upcoming, user, visibility, history) |
 | **Slash** | `/anniversaire-set`, `/anniversaire-list`, `/anniversaire-enable`, `/anniversaire-disable`, `/anniversaire-retirer`, `/anniversaire-config` |
 | **Listener** | (utilise le cron partagé) |
-| **Service** | `src/modules/feature_birthdays/services/announcer.service.js` + `birthday.service.js` |
+| **Service** | `src/modules/engagement_birthdays/services/announcer.service.js` + `birthday.service.js` |
 | **Tests** | `tests/birthday-service.test.js` (3/3 — pre-existing) |
 
 ---
@@ -211,7 +211,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **Endpoints** | `GET/POST/DELETE /api/sticky-roles` |
 | **Slash** | `/stickyrole-add`, `/stickyrole-remove`, `/stickyrole-list`, `/stickyrole-clear` |
 | **Listener** | `guildMemberAdd` + `guildMemberRemove` (avec delay configurable) |
-| **Service** | `src/modules/feature_sticky-roles/services/sticky-roles.service.js` |
+| **Service** | `src/modules/community_sticky-roles/services/sticky-roles.service.js` |
 | **Tests** | `tests/sticky-roles-service.test.js` (7/7) |
 
 ### Info commands
@@ -221,7 +221,7 @@ Ce document liste **toutes** les features implémentées dans le projet Chienne,
 | **But** | `/serverinfo`, `/userinfo`, `/avatar` (équivalent dashboard) |
 | **Endpoints** | `GET /api/info/server`, `/api/info/user/:id`, `/api/info/avatar/:id` |
 | **Slash** | `/serverinfo`, `/userinfo`, `/avatar` |
-| **Service** | `src/modules/feature_info/services/info.service.js` |
+| **Service** | `src/modules/util_info/services/info.service.js` |
 | **Tests** | `tests/info-service.test.js` (8/8) |
 
 ### Games stats (compteurs dashboard)

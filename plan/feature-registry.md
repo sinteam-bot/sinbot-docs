@@ -166,7 +166,7 @@ module.exports = { FeatureRegistry, featureRegistry };
 Chaque module doit enregistrer sa déclaration au démarrage :
 
 ```js
-// src/modules/feature_xp-level/xp-level.module.js
+// src/modules/engagement_xp-level/xp-level.module.js
 const { featureRegistry } = require('../../core/feature-registry');
 const { xpDefaults } = require('./config/defaults');
 

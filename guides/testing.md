@@ -30,7 +30,7 @@ tests/
 └── migration.test.js
 ```
 
-Les tests sont **co-localisés** avec le code source dans certains cas (cf. `src/modules/feature_automod/tests/`).
+Les tests sont **co-localisés** avec le code source dans certains cas (cf. `src/modules/security_automod/tests/`).
 
 ## 3. Anatomie d'un test
 

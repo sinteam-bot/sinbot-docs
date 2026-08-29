@@ -348,7 +348,7 @@ Voir `docs/guides/migrations.md` pour la politique complète (convention `-- @do
 ## 7. Conventions Drizzle
 
 ```js
-// src/modules/feature_xp-level/db/schema.js
+// src/modules/engagement_xp-level/db/schema.js
 const { pgTable, text, integer, serial, bigint } = require('../../../db/schemas/_drizzle.js');
 
 const userXp = pgTable('user_xp', {

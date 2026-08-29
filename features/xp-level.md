@@ -4,7 +4,7 @@
 
 ## 1. Objectif
 
-Étendre le système XP existant (`src/modules/feature_xp-level/`) avec :
+Étendre le système XP existant (`src/modules/engagement_xp-level/`) avec :
 
 - Leaderboards paginés (`/rank`, `/leaderboard`)
 - Messages de level-up (configurables)
@@ -95,7 +95,7 @@ ALTER TABLE xp_users ADD COLUMN rank_updated_at INTEGER;
 ## 5. Architecture
 
 ```
-src/modules/feature_xp-level/
+src/modules/engagement_xp-level/
 ├── xp-level.module.js
 ├── config/schema.js
 ├── db/schema.js

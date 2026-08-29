@@ -159,7 +159,7 @@ npm test
 
 ### 7.1 Pas de validation joi/zod
 
-Les anciennes configs utilisaient `joi` (cf. `src/modules/feature_invites/config/schema.js` qui a été supprimé). La validation se fait maintenant au moment de l'écriture (le `defaults.js` doit respecter le schema). Si une valeur invalide est écrite, le `defaults.js` merge peut donner un état inattendu.
+Les anciennes configs utilisaient `joi` (cf. `src/modules/util_invites/config/schema.js` qui a été supprimé). La validation se fait maintenant au moment de l'écriture (le `defaults.js` doit respecter le schema). Si une valeur invalide est écrite, le `defaults.js` merge peut donner un état inattendu.
 
 **TODO** : ajouter une validation c12 (`configSchema`) dans une phase ultérieure.
 

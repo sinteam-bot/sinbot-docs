@@ -87,7 +87,7 @@ features:
 ## 4. Architecture
 
 ```
-src/modules/feature_tickets/
+src/modules/community_tickets/
 ├── tickets.module.js
 ├── config/schema.js
 ├── db/schema.js                       # tickets, ticket_messages

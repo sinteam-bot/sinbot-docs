@@ -73,7 +73,7 @@ Les messages loggés peuvent contenir des spoils, des images NSFW, des liens mal
 ## 4. Architecture
 
 ```
-src/modules/feature_logs/
+src/modules/security_logs/
 ├── logs.module.js
 ├── config/schema.js
 ├── services/

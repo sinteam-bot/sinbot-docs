@@ -31,7 +31,7 @@
 - Chaque **module** = **un schema Drizzle** + **un repository** + **des migrations versionnées** par feature.
 - `src/db/` ne contient plus que la **connexion** et l'**orchestrateur de migrations** (`drizzle-kit`).
 - `database.js` **disparaît** : ses fonctions migrent vers les repositories des modules concernés.
-- Les **modules existants** (XP, tickets, captcha, …) respectent le pattern déjà utilisé par `feature_xp-level` (cf. `src/modules/feature_xp-level/xp-level.repository.js`).
+- Les **modules existants** (XP, tickets, captcha, …) respectent le pattern déjà utilisé par `feature_xp-level` (cf. `src/modules/engagement_xp-level/xp-level.repository.js`).
 
 ---
 

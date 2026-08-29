@@ -199,6 +199,6 @@ Pour **chaque** module CJS, on le convertit ainsi :
 
 ## 5. Ce que je peux faire maintenant (build)
 
-Si tu me donnes le feu vert, je peux commencer par la **Phase A** : ajouter le helper `import.cjs` et convertir **un seul service pur** (par exemple `src/modules/feature_info/services/info.service.js` qui n'a aucune dépendance discord.js) en `.mjs` pour valider la procédure.
+Si tu me donnes le feu vert, je peux commencer par la **Phase A** : ajouter le helper `import.cjs` et convertir **un seul service pur** (par exemple `src/modules/util_info/services/info.service.js` qui n'a aucune dépendance discord.js) en `.mjs` pour valider la procédure.
 
 Sinon, je peux continuer à implémenter des features (Starboards, Sauvegardes, Commandes fun) en CJS.

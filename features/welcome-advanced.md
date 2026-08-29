@@ -13,7 +13,7 @@ Remplacer le message d'accueil texte basique par :
 
 ## 2. État actuel
 
-`src/modules/feature_welcome/` existe avec :
+`src/modules/welcome_welcome/` existe avec :
 - Message embed de bienvenue (config `welcome_message` + `dm_message`)
 - AUTO_ROLES supportés (mais simple)
 
@@ -108,7 +108,7 @@ Merci à tous pour votre soutien 💜
 ### 3.5 Architecture
 
 ```
-src/modules/feature_welcome/
+src/modules/welcome_welcome/
 ├── welcome.module.js
 ├── config/schema.js
 ├── db/schema.js                  # welcome_milestones, welcome_settings
