@@ -80,7 +80,7 @@ Liste des features qui ont un `defaults.js` :
 | `src/modules/engagement_birthdays/config/defaults.js` | `birthdays` | ~10 |
 | `src/modules/engagement_economy/config/defaults.js` | `economy` | ~50 |
 | `src/modules/game_engagement/config/defaults.js` | `engagement` | ~10 |
-| `src/modules/game_engagement-advanced/config/defaults.js` | `engagement_advanced` | ~15 |
+| `src/modules/util_reminders/config/defaults.js` | `engagement_advanced` | ~15 |
 | `src/modules/util_info/config/defaults.js` | `info` | ~10 |
 | `src/modules/util_invites/config/defaults.js` | `invites` | ~50 |
 | `src/modules/security_logs/config/defaults.js` | `logs` | ~5 |
@@ -157,7 +157,7 @@ Modules qui font leur propre `featureRegistry.define()` dans leur `*.module.js` 
 | `src/modules/engagement_economy/events/drop-reaction-listener.js` | check `isEnabled('economy')` |
 | `src/modules/engagement_economy/economy.module.js` | (via `define`) |
 | `src/modules/game_engagement/events/interaction-create.listener.js` | get `engagement` config |
-| `src/modules/game_engagement-advanced/events/message-create.listener.js` | get state |
+| `src/modules/util_reminders/events/message-create.listener.js` | get state |
 | `src/modules/util_info/info.module.js` | (via `define`) |
 | `src/modules/util_invites/commands/invite-commands.js` | get config for default values |
 | `src/modules/util_invites/services/invites.service.js` | get enabled state for guild |
