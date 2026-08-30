@@ -85,15 +85,15 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Shared inbox (DM → Ticket) | DM au bot crée un canal ticket | 🟡 | `community_tickets/` (partiel: panel bouton) |
-| Anonymous replies | Staff répond anonymement | ❌ | `community_tickets/` |
-| Greeting/closing messages | Messages automatiques ouverture/fermeture | ✅ | `community_tickets/` |
-| Snippets | Sauvegarde de messages réutilisables | ❌ | `community_tickets/` |
-| User blacklisting | Interdire un user de contacter | ❌ | `community_tickets/` |
-| Log viewer | Interface web de logs tickets | ❌ | `community_tickets/` |
-| Custom settings | Catégorie, rôles, logs configurables | 🟡 | `community_tickets/` (partiel) |
+| Shared inbox (DM → Canal Staff) | DM au bot crée un canal ticket privé dans la catégorie staff | ✅ | `community_modmail/` |
+| Anonymous replies (`/areply`) | Staff répond anonymement ("Staff de Serveur") | ✅ | `community_modmail/` |
+| Greeting/closing messages | Messages automatiques d'ouverture et de fermeture | ✅ | `community_modmail/` |
+| Snippets (`/snippet`) | Sauvegarde et utilisation de réponses prédéfinies | ✅ | `community_modmail/` |
+| User blacklisting (`/mail-ban`) | Interdire un utilisateur de contacter le ModMail | ✅ | `community_modmail/` |
+| Log viewer & API REST | Endpoints REST `/api/modmail` pour dashboard | ✅ | `community_modmail/` |
+| Custom settings | Catégorie, rôles staff, messages configurables | ✅ | `community_modmail/` |
 
-**Valeur ajoutée** : Communication staff-membre simplifiée via DM. Alternative au système de tickets classique.
+**Valeur ajoutée** : Communication staff-membre simplifiée via DM. Alternative discrète et professionnelle au système de tickets classique.
 
 ---
 
