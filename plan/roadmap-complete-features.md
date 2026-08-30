@@ -94,23 +94,23 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ## 3. Roadmap priorisée
 
-### Phase 7 — Engagement & Communauté (5-8 jours)
+### Phase 7 — Engagement & Communauté (5-8 jours) ✅
 
 **Objectif** : combler les gaps d'engagement majeurs (présents chez 3+ bots).
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G05 | Starboard | 🟡 | Canal de messages étoilés, réaction ★ configurable |
-| G12 | Suggestions | 🟡 | Système de suggestions avec vote 👍/👎 |
-| G01 | Leaderboard public (web) | 🟡 | Page web publique `/leaderboard` avec embed OG |
-| G09 | Commande /work | 🟢 | Récompense horaire (100-300 coins) avec cooldown 1h |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G05 | Starboard | 🟡 | Canal de messages étoilés, réaction ★ configurable | ✅ Fait |
+| G12 | Suggestions | 🟡 | Système de suggestions avec vote 👍/👎 | ✅ Fait |
+| G01 | Leaderboard public (web) | 🟡 | Page web publique `/leaderboard` avec embed OG | ✅ Fait |
+| G09 | Commande /work | 🟢 | Récompense horaire (100-300 coins) avec cooldown 1h | ✅ Fait |
 
 **Livrables** :
 - Module `community_starboard/` avec seuil configurable
 - Module `community_suggestions/` avec canal de suggestions
-- Endpoint `/api/leaderboard/public` + page Nuxt
+- Endpoint `/api/leaderboard/public` + métadonnées OG
 - Commande `/work` dans `engagement_economy/`
-- Tests unitaires
+- Tests unitaires complets (`tests/starboard-service.test.js`, `tests/suggestions-service.test.js`, `tests/economy-work.test.js`, `tests/leaderboard-public.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
