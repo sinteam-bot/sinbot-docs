@@ -20,9 +20,8 @@ DB table feature_flags          ← state runtime par guilde
 ### Après
 
 ```
-data/common/base.yml           ← defaults infra (versionné)
-data/common/config.yml         ← config admin (gitignore)
-data/common/local.yml          ← dev local (gitignore)
+data/base.config.yml           ← defaults config (versionné)
+data/{NODE_ENV}.config.yml         ← config env (gitignore)
 data/example/<feature>.config.yml   ← defaults code (versionné, par feature)
 data/default/<feature>.config.yml   ← defaults admin (gitignore, par feature)
 data/{guildId}/<feature>.config.yml ← override guilde (gitignore, par feature)
@@ -180,9 +179,8 @@ Le script `scripts/migrate-configs.js` doit être lancé manuellement après cha
 | `src/core/feature-registry.js` | Réécrit pour utiliser c12 au lieu de la DB |
 | `tests/feature-registry.test.js` | Tests adaptés au nouveau backend |
 | `src/index.js` | Ajout des listeners `guildCreate` + `clientReady` pour `initGuildDataDir` |
-| `data/common/base.yml` | Defaults infra (versionné) |
-| `data/common/config.yml` | Config admin (gitignore) |
-| `data/common/local.yml` | Dev local (gitignore) |
+| `data/base.config.yml` | Defaults infra (versionné) |
+| `data/local.config.yml` | Dev local (gitignore) |
 | `data/example/*.config.yml` | 13 fichiers générés (versionnés) |
 | `data/default/*.config.yml` | 13 fichiers générés (gitignore) |
 | `scripts/migrate-configs.js` | Génération des configs depuis `defaults.js` |

@@ -25,12 +25,10 @@
 
 ```
 data/
-├── common/                  # config globale (non versionné pour local.yml, versionné pour base.yml)
-│   ├── base.yml           # valeurs par défaut (versionné, infra)
-│   ├── config.yml         # config principale (DB, logger, API) - .gitignore
-│   ├── production.yml     # overrides prod (auto si NODE_ENV=production)
-│   ├── test.yml           # overrides test (auto si NODE_ENV=test)
-│   └── local.yml          # .gitignore, overrides dev local
+├── base.config.yml           # valeurs par défaut (versionné, infra)
+├── production.config.yml     # overrides prod (auto si NODE_ENV=production)
+├── test.config.yml           # overrides test (auto si NODE_ENV=test)
+└── local.config.yml          # .gitignore, overrides dev local
 ├── default/                # ⚠️ GITIGNORÉ - templates par feature, modifiables par l'admin
 │   ├── xp.config.yml
 │   ├── captcha.config.yml
@@ -79,7 +77,7 @@ APRÈS : FeatureRegistry → c12 loader → fichier YAML
 - [ ] Liste de **tous les `featureRegistry.set(...)`** (PATCH API)
 - [ ] Liste de **tous les `defaults.js`** par feature
 - [ ] Compteur des références à la table `feature_flags` (DB)
-- [ ] Mapping `config.yml` (racine) → `data/common/config.yml`
+- [ ] Mapping `config.yml` (racine) → `data/local.config.yml`
 
 **Critère de succès** : document `docs/audit/config-usage.md` à jour.
 
@@ -96,12 +94,11 @@ APRÈS : FeatureRegistry → c12 loader → fichier YAML
 ### Phase 2 — Migration config commune (~0.5 j)
 
 **Livrables** :
-- [ ] `data/common/base.yml` : valeurs par défaut infra (DB pool, logger, port API)
-- [ ] `data/common/config.yml` : config admin (DB host, etc.) — `.gitignore`
-- [ ] `data/common/local.yml` : overrides dev — `.gitignore`
+- [ ] `data/base.config.yml` : valeurs par défaut infra (DB pool, logger, port API)
+- [ ] `data/local.config.yml` : overrides dev — `.gitignore`
 - [ ] `src/config/index.js` : `getConfig()` lit via c12 (au lieu de `require('config.yml')`)
 - [ ] Tous les tests existants qui dépendent de `getConfig()` doivent passer
-- [ ] `gitignore` mis à jour : `data/common/config.yml`, `data/common/local.yml`, `data/{guildId}/`
+- [ ] `gitignore` mis à jour : `data/local.config.yml`, `data/{guildId}/`
 - [ ] Commit : `refactor(config): migrate global config to c12`
 
 **Critère de succès** : 615/615 tests backend passent, le bot démarre, la config se charge.
@@ -119,7 +116,7 @@ APRÈS : FeatureRegistry → c12 loader → fichier YAML
 ### Phase 4 — Wrapper c12-loader.js complet (~1 j)
 
 **Livrables** :
-- [ ] `getGlobalConfig()` : charge `data/common/*` avec c12 (cascade base → env)
+- [ ] `getGlobalConfig()` : charge `data/*.config.yml` avec c12 (cascade base → env)
 - [ ] `getFeatureConfig(guildId, feature)` : charge le YAML fusionné de la feature (example → default → guild)
 - [ ] `setFeatureConfig(guildId, feature, patch)` : écriture atomique (temp + rename)
 - [ ] `initGuildDataDir(guildId)` : copie `data/default/<feature>.*` → `data/{guildId}/<feature>.*` (sans écraser)
@@ -207,8 +204,7 @@ APRÈS : FeatureRegistry → c12 loader → fichier YAML
 
 ```gitignore
 # Config dynamique (générée à l'exécution)
-data/common/config.yml
-data/common/local.yml
+data/*.config.yml
 data/{guildId}/
 
 # Templates admin (modifiables, pas versionnés)
@@ -216,9 +212,8 @@ data/default/
 ```
 
 À conserver (versionné) :
-- `data/common/base.yml` (infra)
-- `data/common/production.yml` (overrides prod)
-- `data/common/test.yml` (overrides test)
+- `data/base.config.yml` (infra)
+- `data/example.config.yml` (example pour env)
 - `data/example/` (exemples dev, jamais touchés par l'admin)
 
 ---
@@ -383,7 +378,7 @@ for (const m of modules) {
 
 ## 8. Jalons (milestones)
 
-- **Jalon 1** (fin Phase 2) : `config.yml` migré vers c12, tests passent, bot démarre avec config chargée depuis `data/common/`
+- **Jalon 1** (fin Phase 2) : `config.yml` migré vers c12, tests passent, bot démarre avec config chargée depuis `data/`
 - **Jalon 2** (fin Phase 3) : 16 fichiers `data/example/<feature>.config.example.yml` générés et versionnés
 - **Jalon 3** (fin Phase 4) : c12-loader complet avec hot reload, testé unitairement
 - **Jalon 4** (fin Phase 6) : `FeatureRegistry` réécrit, plus aucune référence DB pour la config
