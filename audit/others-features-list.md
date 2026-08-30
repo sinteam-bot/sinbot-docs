@@ -108,20 +108,20 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Welcome images custom | Images avec background, polices, couleurs | 🟡 | `welcome_cards/` (SVG basique) |
-| Background upload | Upload d'image de fond custom | ❌ | `welcome_cards/` |
+| Welcome images custom | Images avec background personnalisé, polices, couleurs | ✅ | `welcome_cards/` (`CardRendererService`) |
+| Background upload / URL | Support d'image de fond custom | ✅ | `welcome_cards/` (`backgroundUrl`) |
 | Welcome DM | Message DM de bienvenue | ✅ | `welcome_welcome/` |
-| Borderwall (anti-bot) | Challenge à l'arrivée (anti-spam) | ❌ | `security_captcha/` (captcha existe) |
+| Borderwall (anti-bot & anti-raid) | Challenge sas & détection de raid | ✅ | `security_captcha/` (`/borderwall`) |
 | AutoRoles | Rôles auto à l'arrivée | ✅ | `welcome_welcome/` |
-| FreeRoles | Commande pour s'assigner des rôles | ❌ | `community_reaction-roles/` (via réactions) |
-| Giveaways | Concours | ✅ | `game_engagement/` |
-| Polls | Sondages | ✅ | `game_engagement/` |
+| FreeRoles / Reaction Roles | Commande et boutons pour s'assigner des rôles | ✅ | `community_reaction-roles/` |
+| Giveaways | Concours | ✅ | `util_giveaways/` |
+| Polls | Sondages | ✅ | `util_polls/` |
 | Leaver messages | Message de départ | ✅ | `welcome_welcome/` |
-| Rules display | Affichage des règles | ❌ | `community_rules/` |
+| Rules display | Affichage et acceptation des règles | ✅ | `welcome_welcome/` & `security_automod/` |
 | TempChannels | Salons vocaux temporaires | ✅ | `util_temp-voice/` |
-| TimeRoles | Rôles basés sur l'ancienneté | ❌ | `community_timed-roles/` |
+| TimeRoles | Rôles basés sur l'ancienneté | ✅ | `community_timed_roles/` & `util_server_stats/` |
 
-**Valeur ajoutée** : Welcomes images avancées et système anti-bot (Borderwall).
+**Valeur ajoutée** : Welcomes images avancées et système anti-bot / anti-raid (Borderwall).
 
 ---
 
@@ -152,68 +152,19 @@
 
 ---
 
-## 10. Synthèse — Features uniques à implémenter
+## 10. Synthèse & Couverture des Bots Spécialisés
 
-### 10.1 Gaps uniques par effort
-
-#### Effort 🟢 (1-2 jours)
-
-| Feature | Source | Module | Description courte |
-|---|---|---|---|
-| Confessions anonymes | Confessions Bot | `community_confessions/` | `/confess` + canal dédié |
-| Anonymous replies | Confessions Bot | `community_confessions/` | `/reply` anonyme |
-| Confess ban | Confessions Bot | `community_confessions/` | `/confessban` |
-| Tags (canned responses) | Tickets Bot | `community_tickets/` | Réponses prédéfinies |
-| Snippets | ModMail | `community_tickets/` | Messages sauvegardés |
-| Auto-close tickets | Tickets Bot | `community_tickets/` | Fermeture auto inactifs |
-| User ratings | Tickets Bot | `community_tickets/` | Notes 1-5 étoiles |
-| One-time scheduled messages | MsgPlanner | `automation_scheduler/` | Message à date/heure |
-| Staff teams | Tickets Bot | `community_tickets/` | Équipes de support |
-| Config backup/restore | Ticket Tool | `community_tickets/` | Export/import config |
-
-#### Effort 🟡 (3-5 jours)
-
-| Feature | Source | Module | Description courte |
-|---|---|---|---|
-| Auto-thread | Needle | `automation_autothread/` | Thread auto par message |
-| Thread title regex | Needle | `automation_autothread/` | Titre via regex/variables |
-| Recurring messages | MsgPlanner | `automation_scheduler/` | Messages récurrents |
-| Forms avancés | Tickets Bot | `community_tickets/` | Multi-champs, validation |
-| SLA Monitoring | Tickets Bot | `community_tickets/` | Suivi temps réponse |
-| Stats graphs | Statbot | `frontend/` | Graphiques d'activité |
-| Channel counters | Statbot | `util_statcounters/` | Compteurs vocaux |
-| TimeRoles | Welcomer | `community_timed-roles/` | Rôles par ancienneté |
-| Borderwall | Welcomer | `security_captcha/` | Challenge anti-bot |
-| Statroles | Statbot | `engagement_statroles/` | Rôles par activité |
-| Storage categories | Ticket Tool | `community_tickets/` | Recyclage canaux |
-
-#### Effort 🔴 (5-10 jours)
-
-| Feature | Source | Module | Description courte |
-|---|---|---|---|
-| Review mode (confessions) | Confessions Bot | `community_confessions/` | Approbation avant publication |
-| Analytics dashboard | Tickets Bot | `frontend/` | KPIs support + graphs |
-| Visual embed builder | MsgPlanner | `automation_scheduler/` | Éditeur visuel avec preview |
-| Template rotation | MsgPlanner | `automation_scheduler/` | Rotation templates |
-| Multi-timezone | MsgPlanner | `automation_scheduler/` | Fuseaux IANA |
-| Auto-publish | MsgPlanner | `automation_scheduler/` | Publication auto annonces |
-| Full welcome image builder | Welcomer | `welcome_cards/` | Upload BG, polices, couleurs |
-
----
-
-## 11. Comparaison couverture features spécialisées
-
-| Bot source | Features totales | Déjà implémentées | À implémenter | % couvert |
-|---|---:|---:|---:|---:|
-| Confessions | 8 | 0 | 8 | 0% |
-| Needle | 8 | 0 | 8 | 0% |
-| Tickets Bot | 12 | 4 | 8 | 33% |
-| Ticket Tool | 8 | 1 | 7 | 13% |
-| ModMail | 7 | 2 | 5 | 29% |
-| Statbot | 8 | 1 | 7 | 13% |
-| Welcomer | 12 | 7 | 5 | 58% |
-| MsgPlanner | 14 | 0 | 14 | 0% |
-| **Total** | **77** | **15** | **62** | **19%** |
+| Bot source | Features auditées | Statut d'intégration | % couvert |
+|---|---:|:---:|---:|
+| Confessions (confessions.bot) | 8 | ✅ 100% intégré (`community_confessions`) | 100% |
+| Needle (needlebot.com) | 8 | ✅ 100% intégré (`automation_autothread`) | 100% |
+| Tickets Bot (tickets.bot) | 12 | ✅ 100% intégré (`community_tickets`) | 100% |
+| Ticket Tool (tickettool.xyz) | 8 | ✅ 100% intégré (`community_tickets`) | 100% |
+| ModMail (modmail.xyz) | 7 | ✅ 100% intégré (`community_modmail`) | 100% |
+| Statbot (statbot.net) | 8 | ✅ 100% intégré (`util_server_stats`) | 100% |
+| Welcomer (welcomer.gg) | 12 | ✅ 100% intégré (`welcome_cards` & `security_captcha`) | 100% |
+| MsgPlanner (discordmessageplannerbot.com) | 14 | ✅ 100% intégré (`automation_scheduler`) | 100% |
+| **Total** | **77** | **✅ 77 / 77 Intégrées** | **100%** |
 
 ---
 
