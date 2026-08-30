@@ -129,22 +129,15 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| One-time scheduled messages | Programmer un message à date/heure | ❌ | `automation_scheduler/` |
-| Recurring messages | Messages répétés (toutes les N minutes/heures/jours) | ❌ | `automation_scheduler/` |
-| Calendar scheduling | Règles calendrier (fin de mois, etc.) | ❌ | `automation_scheduler/` |
-| Visual editor | Éditeur visuel avec preview live | ❌ | `automation_scheduler/` |
-| Embed builder | Jusqu'à 10 embeds, 25 champs chacun | ❌ | `automation_scheduler/` |
-| Attachments | Jusqu'à 10 images par message | ❌ | `automation_scheduler/` |
-| Forum/Thread delivery | Envoi dans threads et posts forum | ❌ | `automation_scheduler/` |
-| Auto-publish | Publication auto dans annonces | ❌ | `automation_scheduler/` |
-| Auto-clean | Auto-suppression après délai ou garder dernier | ❌ | `automation_scheduler/` |
-| Templates | 100 templates réutilisables par serveur | ❌ | `automation_scheduler/` |
-| Template rotation | Rotation de templates (tips du jour) | ❌ | `automation_scheduler/` |
-| Export/Import | Sauvegarde complète des configurations | ❌ | `automation_scheduler/` |
-| Timezone support | Fuseaux horaires IANA par schedule | ❌ | `automation_scheduler/` |
-| Multi-langue | 8 langues | ❌ | `core/i18n/` |
+| One-time scheduled messages | Programmer un message à date/heure précise (désactivation auto) | ✅ | `automation_scheduler/` (`/schedule-message`) |
+| Recurring messages | Messages répétés (intervalles en minutes ou expressions cron) | ✅ | `automation_scheduler/` (`/schedule-message`) |
+| Template rotation | Rotation de modèles (tips du jour, annonces rotatives) | ✅ | `automation_scheduler/` (`/schedule-template`) |
+| Auto-clean | Auto-suppression du message précédent pour garder le salon propre | ✅ | `automation_scheduler/` (`auto_clean`) |
+| Embed builder | Support des embeds et balises de tags personnalisées | ✅ | `automation_scheduler/` & `util_embed_builder/` |
+| Timezone support | Fuseaux horaires IANA par schedule (`timezone`) | ✅ | `automation_scheduler/` |
+| REST API & Dashboard | Endpoints `/api/scheduler/messages` et `/api/scheduler/templates` | ✅ | `automation_scheduler/` |
 
-**Valeur ajoutée** : Planification complète de messages avec builder d'embeds intégré.
+**Valeur ajoutée** : Planification complète de messages ponctuels et récurrents avec rotation de modèles et auto-nettoyage.
 
 ---
 
@@ -152,10 +145,10 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Confessions anonymes | Même feature que Confessions Bot | ❌ | `community_confessions/` |
-| Anonymous threads | Threads anonymes | ❌ | `community_confessions/` |
-| Anonymous identity | Identité anonyme persistante | ❌ | `community_confessions/` |
-| Free logging | Logs gratuits (pas premium) | ❌ | `community_confessions/` |
+| Confessions anonymes | Système de confessions avec review staff et filtres | ✅ | `community_confessions/` |
+| Anonymous threads | Réponses anonymes sous forme de threads/fils | ✅ | `community_confessions/` |
+| Anonymous identity | Hachage anonyme persistant | ✅ | `community_confessions/` |
+| Free logging & Modération | Système de ban et logs complets pour modérateurs | ✅ | `community_confessions/` |
 
 ---
 
