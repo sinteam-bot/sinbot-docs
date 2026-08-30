@@ -167,23 +167,23 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 10 — Rôles avancés (4-6 jours)
+### Phase 10 — Rôles avancés (4-6 jours) ✅
 
 **Objectif** : compléter la gestion des rôles (temporisés, modes avancés).
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G07 | Rôles temporisés (timed roles) | 🟢 | Attacher un rôle pour X heures/jours |
-| G18 | Modes reaction roles avancés | 🟡 | Reversed, binding, temporary |
-| G26 | Ranks (rangs configurables) | 🟡 | Système de rangs avec `/rank join` |
-| G42 | Rôle après acceptation règles | 🟢 | Attendre les règles Discord avant donner rôle |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G07 | Rôles temporisés (timed roles) | 🟢 | Attacher un rôle pour X heures/jours | ✅ Fait |
+| G18 | Modes reaction roles avancés | 🟡 | Reversed, binding, temporary | ✅ Fait |
+| G26 | Ranks (rangs configurables) | 🟡 | Système de rangs avec `/rank join` | ✅ Fait |
+| G42 | Rôle après acceptation règles | 🟢 | Attendre les règles Discord avant donner rôle | ✅ Fait |
 
 **Livrables** :
-- Module `community_timed-roles/` avec cron
+- Module `community_timed_roles/` avec boucle périodique de nettoyage et commandes `/timed-role`
 - Modes reversed/binding/temporary dans `community_reaction-roles/`
-- Module `community_ranks/` pour rôles rejoignables
-- Intégration `guildMemberUpdate` pour règles acceptées
-- Tests unitaires
+- Module `community_ranks/` pour rôles auto-rejoignables `/rank` et API REST
+- Intégration `guildMemberUpdate` (`RulesScreeningListener`) pour règles Discord acceptées (Membership Screening)
+- Tests unitaires complets (`tests/timed-roles.test.js`, `tests/reaction-roles-modes.test.js`, `tests/ranks-service.test.js`, `tests/rules-screening.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
