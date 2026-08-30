@@ -116,27 +116,27 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 8 — Automatisation avancée (5-7 jours)
+### Phase 8 — Automatisation avancée (5-7 jours) ✅
 
 **Objectif** : compléter l'automatisation (messages programmés, regex, triggers avancés).
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G02 | Regex dans triggers | 🟢 | Activer `matchType: regex` dans autoresponder |
-| G03 | Messages programmés / répétés | 🟡 | Auto Message avec cron (toutes les X minutes/heures) |
-| G31 | Trigger gain/perte rôle | 🟢 | Événement `guildMemberRoleAdd/Remove` |
-| G30 | Condition positive (automation) | 🟢 | Condition "a le rôle X" (pas juste exclusion) |
-| G43 | Action retirer rôle | 🟢 | Ajouter `remove-role` aux custom commands et automations |
-| G44 | Valeurs par défaut (custom cmd) | 🟢 | `{1:defaut}` dans les custom commands |
-| G19 | Variables XP/économie (cmd) | 🟡 | `{user.level}`, `{user.xp}`, `{user.coins}` |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G02 | Regex dans triggers | 🟢 | Activer `matchType: regex` dans autoresponder | ✅ Fait |
+| G03 | Messages programmés / répétés | 🟡 | Auto Message avec cron (toutes les X minutes/heures) | ✅ Fait |
+| G31 | Trigger gain/perte rôle | 🟢 | Événement `guildMemberRoleAdd/Remove` | ✅ Fait |
+| G30 | Condition positive (automation) | 🟢 | Condition "a le rôle X" (pas juste exclusion) | ✅ Fait |
+| G43 | Action retirer rôle | 🟢 | Ajouter `remove-role` aux custom commands et automations | ✅ Fait |
+| G44 | Valeurs par défaut (custom cmd) | 🟢 | `{1:defaut}` dans les custom commands | ✅ Fait |
+| G19 | Variables XP/économie (cmd) | 🟡 | `{user.level}`, `{user.xp}`, `{user.coins}` | ✅ Fait |
 
 **Livrables** :
-- Regex activé dans `game_engagement-advanced/`
-- Module `automation_scheduler/` pour messages programmés
-- Conditions positives dans le système de triggers
-- Action `remove-role` dans custom commands
-- Variables étendues dans le parser de custom commands
-- Tests unitaires
+- Moteur de parsing de tags et variables `src/utils/commandTagParser.js`
+- Regex et conditions positives activés dans `util_word_triggers/`
+- Module `automation_scheduler/` pour messages programmés (avec scheduler automatique et commandes slash)
+- Action `remove-role`, `add-role`, `delete` dans custom commands et automations
+- Variables étendues (`{user.level}`, `{user.xp}`, `{user.coins}`, `{server.name}`, etc.)
+- Tests unitaires complets (`tests/command-tag-parser.test.js`, `tests/word-triggers-regex.test.js`, `tests/custom-commands-advanced.test.js`, `tests/automation-scheduler.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
