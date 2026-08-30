@@ -231,23 +231,24 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 13 — Économie avancée (3-4 jours)
+### Phase 13 — Économie avancée (3-4 jours) ✅
 
 **Objectif** : compléter l'économie avec les features manquantes.
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G11 | Boosts économiques | 🟡 | Boost temporaire sur gains (1%-500%) |
-| G29 | /economy-info | 🟢 | Afficher solde, streak, boost actif |
-| G32 | Cocréation giveaway (sélection rôles) | 🟢 | Sélectionner rôles gagnants |
-| G33 | Giveaway partageable | 🟢 | Lien partageable pour giveaway |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G11 | Boosts économiques | 🟡 | Boost temporaire sur gains (1%-500%) appliqués à `/work` et `/daily` | ✅ Fait |
+| G29 | /economy-info | 🟢 | Afficher solde, streak, boost actif (`/economy-info`, `/economy-boost`) | ✅ Fait |
+| G32 | Cocréation giveaway (sélection rôles) | 🟢 | Rôles requis et tirage pondéré par multiplicateurs de rôles | ✅ Fait |
+| G33 | Giveaway partageable | 🟢 | Lien direct de partage Discord dans embeds et via `/giveaway-share` | ✅ Fait |
 
 **Livrables** :
-- Système de boost dans `engagement_economy/`
-- Commande `/economy-info`
-- Sélection de rôles dans `game_engagement/`
-- Lien partageable pour giveaways
-- Tests unitaires
+- Système de boosts temporaires avec persistance BDD (`economy_boosts`) dans `engagement_economy/`
+- Application automatique des multiplicateurs sur `/work` et `/daily`
+- Commande `/economy-info` (profil utilisateur) et `/economy-boost` (attribution admin)
+- Sélection de rôles et tirage pondéré CSPRNG selon rôles dans `util_giveaways/`
+- Liens de partage directs dans les embeds de giveaways et commande `/giveaway-share`
+- Tests unitaires complets (`tests/economy-boosts.test.js`, `tests/economy-info.test.js`, `tests/giveaways-advanced.test.js`)
 
 **Dépendances** : Phases 0-7 (économie de base)
 
