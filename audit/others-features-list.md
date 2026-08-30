@@ -29,14 +29,14 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Auto-thread automatique | Crée un thread par message dans canaux configurés | ❌ | `automation_autothread/` |
-| Titre configurable | Variables de message, regex pour titre | ❌ | `automation_autothread/` |
-| Message custom | Message personnalisé dans le thread | ❌ | `automation_autothread/` |
-| Changement de titre (`/title`) | Mod titre sans permissions spéciales | ❌ | `automation_autothread/` |
-| Fermeture (`/close`) | Archiver le thread | ❌ | `automation_autothread/` |
-| Slowmode | Rate limit dans les threads créés | ❌ | `automation_autothread/` |
-| Pin message | Pin auto du premier message | ❌ | `automation_autothread/` |
-| Emoji thread sans reply | Indicateur 🆕 pour threads sans réponse | ❌ | `automation_autothread/` |
+| Auto-thread automatique | Crée un thread par message dans canaux configurés | ✅ | `automation_autothread/` |
+| Titre configurable | Variables `{author}`, `{message}`, `{date}` | ✅ | `automation_autothread/` |
+| Message custom | Message personnalisé dans le thread | ✅ | `automation_autothread/` |
+| Changement de titre (`/thread rename`) | Mod titre par l'auteur ou staff | ✅ | `automation_autothread/` |
+| Fermeture (`/thread close` / `/thread lock`) | Archiver ou verrouiller le thread | ✅ | `automation_autothread/` |
+| Slowmode | Rate limit dans les threads créés | ✅ | `automation_autothread/` |
+| Pin message | Pin auto du premier message | ✅ | `automation_autothread/` |
+| Configuration par salon (`/autothread`) | Gestion multi-salons et API REST | ✅ | `automation_autothread/` |
 
 **Valeur ajoutée** : Réduit le bruit dans les salons d'images/discussions. Organise automatiquement les conversations.
 
