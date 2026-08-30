@@ -211,21 +211,21 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 12 — Logging & Embeds (3-4 jours)
+### Phase 12 — Logging & Embeds (3-4 jours) ✅
 
 **Objectif** : compléter le logging et les embeds.
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G20 | Split logs par salon | 🟢 | Logs modération dans un canal, messages dans un autre |
-| G40 | Message Embedder | 🟡 | Créer/éditer des embeds persistants via dashboard |
-| G39 | Purge programmée | 🟢 | Purger un canal toutes les X heures |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G20 | Split logs par salon | 🟢 | Logs modération dans un canal, messages dans un autre | ✅ Fait |
+| G40 | Message Embedder | 🟡 | Créer/éditer des embeds persistants via dashboard et slash `/embed` | ✅ Fait |
+| G39 | Purge programmée | 🟢 | Purger un canal toutes les X heures (`/purge-schedule`) | ✅ Fait |
 
 **Livrables** :
-- Configuration multi-canaux dans `security_logs/`
-- Module `util_embed-builder/` avec persistance
-- Auto Purge dans `security_automod/`
-- Tests unitaires
+- Configuration multi-canaux et routage split logs dans `security_logs/`
+- Module `util_embed_builder/` avec persistance BDD, modification live et API REST
+- Purge programmée automatique dans `security_automod/` avec préservation des messages épinglés
+- Tests unitaires complets (`tests/logs-split-routing.test.js`, `tests/embed-builder-service.test.js`, `tests/scheduled-purge-service.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
