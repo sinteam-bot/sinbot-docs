@@ -142,26 +142,26 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 9 — Utilitaires & Fun (4-6 jours)
+### Phase 9 — Utilitaires & Fun (4-6 jours) ✅
 
 **Objectif** : ajouter les utilitaires manquants et le divertissement.
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G04 | Fun commands | 🟢 | `/8ball`, `/roll`, `/coinflip`, `/meme` |
-| G06 | AFK | 🟡 | Statut d'absence avec message automatique |
-| G08 | Compteur de membres (voice) | 🟢 | Salon vocal `# Membres: 123` auto-update |
-| G25 | Couleurs de rôles | 🟢 | Commande `/role color #ff0000` |
-| G27 | Text transformation | 🟢 | `/mock`, `/uppercase`, `/reverse`, etc. |
-| G41 | Tags (commandes courtes) | 🟢 | Raccourcis `!tag nom` → réponse |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G04 | Fun commands | 🟢 | `/8ball`, `/roll`, `/coinflip`, `/meme` | ✅ Fait |
+| G06 | AFK | 🟡 | Statut d'absence avec message automatique | ✅ Fait |
+| G08 | Compteur de membres (voice) | 🟢 | Salon vocal `# Membres: 123` auto-update | ✅ Fait |
+| G25 | Couleurs de rôles | 🟢 | Commande `/role color #ff0000` | ✅ Fait |
+| G27 | Text transformation | 🟢 | `/mock`, `/uppercase`, `/reverse`, `/zalgo` | ✅ Fait |
+| G41 | Tags (commandes courtes) | 🟢 | Raccourcis `!tag nom` → réponse | ✅ Fait |
 
 **Livrables** :
-- Module `util_fun/` avec commandes fun
-- Module `util_afk/` avec statut d'absence
-- Module `util_server-stats/` pour compteurs vocaux
-- Commande `/role color` dans `community_reaction-roles/`
-- Module `util_tags/` pour tags/courtes
-- Tests unitaires
+- Module `util_fun/` avec commandes fun & text-transform
+- Module `util_afk/` avec statut d'absence et auto-notifications
+- Module `util_server_stats/` pour compteurs vocaux auto-actualisés
+- Commande `/role-color` dans `community_reaction-roles/`
+- Module `util_tags/` pour tags/réponses courtes (slash + préfixe `!tag`)
+- Tests unitaires complets (`tests/fun-service.test.js`, `tests/afk-service.test.js`, `tests/server-stats-service.test.js`, `tests/tags-service.test.js`, `tests/role-color.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
