@@ -11,15 +11,15 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Confessions anonymes (`/confess`) | Messages anonymes dans un canal dédié | ❌ | `community_confessions/` |
-| Réponses anonymes (`/reply`) | Répondre anonymement à une confession | ❌ | `community_confessions/` |
-| Sondages anonymes | Créer des sondages anonymes | ❌ | `community_confessions/` |
-| Mode revue (review) | Staff approuve/rejette avant publication | 🟡 | `community_confessions/` (partial: reports existants) |
-| Bannissement (`/confessban`) | Interdire un user de confesser | ❌ | `community_confessions/` |
-| Filtres de mots | Blocker mots inappropriés dans confessions | ❌ | `community_confessions/` |
-| Signalements (`/report`) | Signaler une confession abusive | 🟡 | `community_reports/` (existe mais pas pour confessions) |
-| Canaux multiples | Plusieurs canaux de confession (premium) | ❌ | `community_confessions/` |
-| Couleurs embed custom | Personnaliser couleur des embeds | 🟡 | `welcome_cards/` (existe partiellement) |
+| Confessions anonymes (`/confess`) | Messages anonymes dans un canal dédié | ✅ | `community_confessions/` |
+| Réponses anonymes (`/reply`) | Répondre anonymement à une confession | ✅ | `community_confessions/` |
+| Sondages anonymes | Créer des sondages anonymes | 🟡 | `community_polls/` (sondages existants) |
+| Mode revue (review) | Staff approuve/rejette avant publication | ✅ | `community_confessions/` |
+| Bannissement (`/confessban`) | Interdire un user de confesser | ✅ | `community_confessions/` |
+| Filtres de mots | Blocker mots inappropriés dans confessions | ✅ | `community_confessions/` |
+| Signalements (`/report`) | Signaler une confession abusive | ✅ | `community_reports/` & `community_confessions/` |
+| Canaux multiples | Plusieurs canaux de confession | ✅ | `community_confessions/` |
+| Couleurs embed custom | Personnaliser couleur des embeds | ✅ | `community_confessions/` (`config.color`) |
 
 **Valeur ajoutée** : Espace d'expression anonyme sécurisé pour les membres. Feature communautaire très populaire.
 
