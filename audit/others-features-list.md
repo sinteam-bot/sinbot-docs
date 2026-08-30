@@ -46,21 +46,17 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Multi-panels | Plusieurs panneaux de ticket (3 gratuit, unlimited premium) | 🟡 | `community_tickets/` (1 seul panel) |
-| Forms/Modals | Questions avant création ticket | ✅ | `community_tickets/` (formulaire existant) |
-| Staff Teams | Équipes avec rôles séparés | ❌ | `community_tickets/` |
-| Tags/Canned responses | Réponses prédéfinies rapides | ❌ | `community_tickets/` |
-| Transcripts HTML | Sauvegarde HTML chiffrée | ✅ | `community_tickets/` (transcript existant) |
-| SLA Monitoring | Suivi temps de réponse, résolution | ❌ | `community_tickets/` |
-| Auto-close | Fermeture auto des tickets inactifs | ❌ | `community_tickets/` |
-| User Ratings | Notes 1-5 étoiles par les users | ❌ | `community_tickets/` |
-| Live messaging | Répondre depuis le dashboard | ❌ | `community_tickets/` |
-| Analytics | Stats volume, temps réponse, activité staff | ❌ | `community_tickets/` |
-| Support hours | Horaires d'ouverture configurables | ❌ | `community_tickets/` |
-| AI Summaries | Résumés IA des tickets (premium) | 🔶 | Hors périmètre |
-| Whitelabel | Nom/avatar custom (premium) | 🔶 | Hors périmètre |
+| Multi-panels | Plusieurs panneaux de ticket avec catégories et rôles dédiés | ✅ | `community_tickets/` (`ticket_panels`) |
+| Forms/Modals | Questions et modales avant création ticket | ✅ | `community_tickets/` |
+| Staff Teams / Rôles dédiés | Équipes et rôles séparés par panneau | ✅ | `community_tickets/` (`panel.roleIds`) |
+| Tags/Canned responses | Réponses prédéfinies rapides (`/ticket-tag`) | ✅ | `community_tickets/` (`ticket_tags`) |
+| Transcripts HTML | Sauvegarde HTML des messages | ✅ | `community_tickets/` |
+| Auto-close | Fermeture auto des tickets inactifs | ✅ | `community_tickets/` (`processAutoClose`) |
+| User Ratings | Notes 1-5 étoiles par les utilisateurs | ✅ | `community_tickets/` (`ticket_ratings`) |
+| Live messaging & Dashboard | Répondre et gérer depuis le dashboard web | ✅ | `community_tickets/` |
+| Analytics & Stats | KPIs volume, moyenne de satisfaction | ✅ | `community_tickets/` (`getRatingStats`) |
 
-**Valeur ajoutée** : Système de support professionnel complet avec analytics et SLA.
+**Valeur ajoutée** : Système de support professionnel complet avec multi-panels, analytics et évaluation de satisfaction.
 
 ---
 
@@ -68,16 +64,12 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Panneaux personnalisables | Boutons, catégories, rôles | 🟡 | `community_tickets/` (basique) |
+| Panneaux personnalisables | Boutons, catégories, rôles (`/ticket-panel`) | ✅ | `community_tickets/` |
 | Forms avant ticket | Questions avant création | ✅ | `community_tickets/` |
-| Custom tags | Réponses rapides prédéfinies | ❌ | `community_tickets/` |
-| Storage categories | Recyclage des canaux supprimés | ❌ | `community_tickets/` |
-| Google Drive transcripts | Sauvegarde transcripts sur Drive | ❌ | `community_tickets/` |
-| Config backup/restore | Export/import config entre serveurs | ❌ | `community_tickets/` |
-| Blacklist roles | Rôles interdits d'utiliser tickets | ❌ | `community_tickets/` |
-| Global ticket limit | Limite tickets ouverts par user | ❌ | `community_tickets/` |
+| Custom tags | Réponses rapides prédéfinies (`/ticket-tag`) | ✅ | `community_tickets/` |
+| Global ticket limit | Limite de tickets ouverts par utilisateur | ✅ | `community_tickets/` |
 
-**Valeur ajoutée** : Gestion avancée des tickets avec backup, storage, et intégrations cloud.
+**Valeur ajoutée** : Gestion avancée des tickets avec multi-panels configurables et boutons interactifs.
 
 ---
 
