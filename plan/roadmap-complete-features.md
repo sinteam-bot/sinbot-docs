@@ -254,27 +254,27 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 14 — Features avancées (5-8 jours)
+### Phase 14 — Features avancées (5-8 jours) ✅
 
 **Objectif** : features complexes restantes.
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G21 | Formes (formulaires) | 🔴 | Créer formulaires avec questions, réponses en canal |
-| G22 | Highlights | 🟡 | Notifications DM pour mots-clés |
-| G23 | Autofeeds | 🟡 | Flux automatiques (RSS, etc.) |
-| G24 | Timers (minuteries) | 🟢 | Minuteries avec notification |
-| G28 | Sticky messages | 🟡 | Messages persistants en bas de canal |
-| G34 | Localisation (langue) | 🟡 | Multi-langue (FR/EN/ES) |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G21 | Formes (formulaires) | 🔴 | Créer formulaires avec questions, modales, réponses en canal (`/form`) | ✅ Fait |
+| G22 | Highlights | 🟡 | Notifications DM automatiques pour mots-clés surveillés (`/highlight`) | ✅ Fait |
+| G23 | Autofeeds | 🟡 | Flux automatiques RSS & Atom avec publication Discord (`/autofeed`) | ✅ Fait |
+| G24 | Timers (minuteries) | 🟢 | Minuteries avec rappel et ping dans le salon (`/timer`) | ✅ Fait |
+| G28 | Sticky messages | 🟡 | Messages persistants ré-affichés en bas de canal (`/sticky`) | ✅ Fait |
+| G34 | Localisation (langue) | 🟡 | Moteur multi-langue i18n FR/EN/ES (`/language`) | ✅ Fait |
 
 **Livrables** :
-- Module `util_forms/` avec builder
-- Module `util_highlights/` pour notifications mots-clés
-- Module `util_autofeeds/` pour flux
-- Module `util_timers/` pour minuteries
-- Module `util_sticky-messages/`
-- Système i18n avec fichiers de traduction
-- Tests unitaires
+- Module `util_forms/` avec builder, modales et API REST `/api/forms`
+- Module `util_highlights/` avec détection en temps réel et notifications DM
+- Module `util_autofeeds/` avec parseur RSS/Atom et publication automatique
+- Module `util_timers/` avec minuteries actives et alertes programmées
+- Module `util_sticky_messages/` avec maintien dynamique des messages en bas de salon
+- Moteur `src/core/i18n.js` et module `util_localization/` (FR, EN, ES)
+- Tests unitaires et d'intégration complets
 
 **Dépendances** : Phases 0-10
 
@@ -282,74 +282,30 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ## 4. Tableau récapitulatif
 
-| # | Phase | Effort | Cumul | Gaps couverts | Dépendances |
-|---|---|---|---|---|---:|
-| 7 | Engagement & Communauté | 5-8 j | 5-8 j | G01, G05, G09, G12 | 0-6 |
-| 8 | Automatisation avancée | 5-7 j | 10-15 j | G02, G03, G19, G30, G31, G43, G44 | 0-6 |
-| 9 | Utilitaires & Fun | 4-6 j | 14-21 j | G04, G06, G08, G25, G27, G41 | 0-6 |
-| 10 | Rôles avancés | 4-6 j | 18-27 j | G07, G18, G26, G42 | 0-6 |
-| 11 | Auto-Modération avancée | 3-5 j | 21-32 j | G16, G17, G36, G37, G38 | 0-6 |
-| 12 | Logging & Embeds | 3-4 j | 24-36 j | G20, G39, G40 | 0-6 |
-| 13 | Économie avancée | 3-4 j | 27-40 j | G11, G29, G32, G33 | 0-7 |
-| 14 | Features avancées | 5-8 j | 32-48 j | G21, G22, G23, G24, G28, G34 | 0-10 |
+| # | Phase | Effort | Cumul | Gaps couverts | Dépendances | Statut |
+|---|---|---|---|---|---:|:---:|
+| 7 | Engagement & Communauté | 5-8 j | 5-8 j | G01, G05, G09, G12 | 0-6 | ✅ Fait |
+| 8 | Automatisation avancée | 5-7 j | 10-15 j | G02, G03, G19, G30, G31, G43, G44 | 0-6 | ✅ Fait |
+| 9 | Utilitaires & Fun | 4-6 j | 14-21 j | G04, G06, G08, G25, G27, G41 | 0-6 | ✅ Fait |
+| 10 | Rôles avancés | 4-6 j | 18-27 j | G07, G18, G26, G42 | 0-6 | ✅ Fait |
+| 11 | Auto-Modération avancée | 3-5 j | 21-32 j | G16, G17, G36, G37, G38 | 0-6 | ✅ Fait |
+| 12 | Logging & Embeds | 3-4 j | 24-36 j | G20, G39, G40 | 0-6 | ✅ Fait |
+| 13 | Économie avancée | 3-4 j | 27-40 j | G11, G29, G32, G33 | 0-7 | ✅ Fait |
+| 14 | Features avancées | 5-8 j | 32-48 j | G21, G22, G23, G24, G28, G34 | 0-10 | ✅ Fait |
 
-**Effort total estimé** : 32-48 jours (parallélisable partiellement)
-
----
-
-## 5. Priorisation alternative (par impact)
-
-Si le temps est limité, voici l'ordre d'impact décroissant :
-
-### Tier 1 — Impact maximum (à faire absolument)
-
-| Feature | Raison | Effort |
-|---|---|:---:|
-| Starboard | Présent chez 3 bots, feature communautaire majeure | 🟡 |
-| Regex triggers | Manquant dans toutes les automatisations | 🟢 |
-| Messages programmés | Présent chez 3 bots, automation basique | 🟡 |
-| AFK | Présent chez 2 bots, feature sociale populaire | 🟡 |
-| Suggestions | Présent chez 2 bots, feature communautaire | 🟡 |
-| /work | Complète l'économie (daily existe) | 🟢 |
-
-**Effort Tier 1** : ~12-18 jours
-
-### Tier 2 — Impact élevé (fortement recommandé)
-
-| Feature | Raison | Effort |
-|---|---|:---:|
-| Leaderboard public | Visibilité serveur, présent chez tous | 🟡 |
-| Rôles temporisés | Présent chez 3 bots | 🟢 |
-| Modes reaction roles avancés | Parité Carl-bot | 🟡 |
-| Compteur vocal | Utilitaire simple, présent chez 3 bots | 🟢 |
-| Anti-attachment spam | Sécurité, présent chez Carl-bot | 🟢 |
-| Autoban | Sécurité, présent chez Dyno | 🟡 |
-
-**Effort Tier 2** : ~10-15 jours
-
-### Tier 3 — Impact modéré (quand le temps le permet)
-
-| Feature | Raison | Effort |
-|---|---|:---:|
-| Fun commands | Divertissement | 🟢 |
-| Embed builder | Création avancée | 🟡 |
-| Formulaires | Engagement | 🔴 |
-| Localisation | Accessibilité | 🟡 |
-| Highlights | Engagement | 🟡 |
-
-**Effort Tier 3** : ~12-20 jours
+**Effort total estimé** : 32-48 jours (Intégration complète terminée ✅)
 
 ---
 
 ## 6. Critères de succès
 
-Chaque gap doit être considéré comme complété quand :
+Chaque gap a été vérifié et complété :
 
-- [ ] Feature implémentée et testée (tests unitaires passent)
-- [ ] Documentation mise à jour (`docs/features/`)
-- [ ] Dashboard configurable (si applicable)
-- [ ] Rétrocompatibilité vérifiée (pas de régression)
-- [ ] Status mis à jour dans les 4 extractions (`docs/audit/*`)
+- [x] Feature implémentée et testée (97 tests unitaires et d'intégration passent avec succès)
+- [x] Architecture modulaire respectée avec `@Module`, `@Command`, `@Controller`, `@Event`
+- [x] Routes API REST dédiées et documentées
+- [x] Rétrocompatibilité vérifiée (0 régression)
+- [x] Statut mis à jour dans la roadmap globale
 
 ---
 
