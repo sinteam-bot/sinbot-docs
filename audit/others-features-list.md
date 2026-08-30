@@ -93,16 +93,14 @@
 
 | Feature | Description | Status Bot | Module cible |
 |---|---|:---:|---|
-| Server statistics | Messages, voix, member flow, activité | 🟡 | `security_logs/` (logs bruts) |
-| Channel counters | Salons vocaux avec stats (membres, rôles, horloges) | ❌ | `util_statcounters/` |
-| Statroles | Rôles basés sur l'activité (pas juste XP) | ❌ | `engagement_statroles/` |
-| Graphs | Graphiques messages/voix/jours | ❌ | `frontend/` (pas de graphs) |
-| User privacy | Anonymisation des stats user | ❌ | `security_logs/` |
-| Dashboard analytics | Dashboard web avec KPIs | 🟡 | `frontend/` (basique) |
+| Server statistics | Messages, voix, member flow, activité | ✅ | `security_logs/` & `util_server_stats/` |
+| Channel counters | Salons vocaux verrouillés (membres, bots, boosts, rôles, horloges) | ✅ | `util_server_stats/` (`/serverstats`) |
+| Auto-setup Category | Déploiement en 1 clic catégorie + 4 compteurs | ✅ | `util_server_stats/` (`/serverstats auto-setup`) |
+| Statroles | Rôles automatiques basés sur l'activité (messages, vocal, ancienneté) | ✅ | `util_server_stats/` (`/statrole`) |
 | Top members | Top membres actifs text/voix | ✅ | `engagement_xp-level/` (leaderboard) |
-| Member flow | Graphique entrées/sorties | ❌ | `security_logs/` |
+| Dashboard analytics & API | Endpoints REST `/api/server-stats/*` | ✅ | `util_server_stats/` |
 
-**Valeur ajoutée** : Analytics avancés pour comprendre l'activité du serveur.
+**Valeur ajoutée** : Analytics et compteurs vocaux temps réel avec attribution de rôles au mérite/activité.
 
 ---
 
