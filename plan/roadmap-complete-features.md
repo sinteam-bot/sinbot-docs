@@ -189,23 +189,23 @@ Les gaps sont dédoublonnés et priorisés par **fréquence d'apparition** (un g
 
 ---
 
-### Phase 11 — Auto-Modération avancée (3-5 jours)
+### Phase 11 — Auto-Modération avancée (3-5 jours) ✅
 
 **Objectif** : renforcer l'automod avec les filtres manquants.
 
-| # | Feature | Effort | Description |
-|---|---|---|---:|
-| G16 | Anti-attachment spam | 🟢 | Limiter les fichiers joints (rate limit) |
-| G17 | Autoban | 🟡 | Ban automatique (account age, username, etc.) |
-| G36 | Anti-zalgo | 🟢 | Filtrer les caractères zalgo |
-| G37 | Anti-sticker | 🟢 | Limiter/bloquer les stickers |
-| G38 | Auto Delete avancé (par salon) | 🟡 | Filtres de suppression par canal |
+| # | Feature | Effort | Description | Statut |
+|---|---|---|---:|:---:|
+| G16 | Anti-attachment spam | 🟢 | Limiter les fichiers joints (rate limit & par message) | ✅ Fait |
+| G17 | Autoban | 🟡 | Ban automatique (account age, avatar, pseudo regex) | ✅ Fait |
+| G36 | Anti-zalgo | 🟢 | Filtrer les caractères zalgo / glitch | ✅ Fait |
+| G37 | Anti-sticker | 🟢 | Limiter/bloquer les stickers | ✅ Fait |
+| G38 | Auto Delete avancé (par salon) | 🟡 | Filtres de suppression par canal (`media_only`, `no_media`, regex, purge) | ✅ Fait |
 
 **Livrables** :
-- Filtres supplémentaires dans `security_automod/`
-- Module `security_autoban/` pour règles nouveaux membres
-- Auto Delete par salon dans `security_automod/`
-- Tests unitaires
+- Filtres supplémentaires dans `security_automod/` (`anti_attachment_spam`, `anti_zalgo`, `anti_sticker`, `channel_rules`)
+- Module `security_autoban/` pour règles nouveaux membres (`guildMemberAdd`, repository, table `autoban_logs`, `/autoban`)
+- Auto Delete par salon dans `security_automod/` (`channel_rules`)
+- Tests unitaires complets (`tests/automod-advanced-filters.test.js`, `tests/autoban-service.test.js`)
 
 **Dépendances** : Phases 0-6 complètes
 
