@@ -19,6 +19,7 @@ Bienvenue dans la documentation du bot Discord. Ce dossier regroupe l'ensemble d
 - [`features/giveaways-polls.md`](./features/giveaways-polls.md) — Giveaways & sondages (P3)
 - [`features/welcome-advanced.md`](./features/welcome-advanced.md) — Bienvenue avancée (cartes, autoroles) (P3)
 - [`features/birthdays.md`](./features/birthdays.md) — Système d'anniversaires avec cron quotidien, mode public/privé, cooldown, cadeaux (Phase 7)
+- [`features/teamspeak.md`](./features/teamspeak.md) — Module TeamSpeak 3 (Widget arborescence & Logs Discord)
 
 ### Audit vs DraftBot
 
