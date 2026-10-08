@@ -97,7 +97,7 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
   - `{mentions}` : pings des abonnés et rôles
 - La session active est sauvegardée dans la table `autofeed_live_sessions` avec l'ID du message Discord envoyé.
 
-### 4.2 Clôture In-Place sans Ghost-Ping
+### 4.2 Clôture In-Place sans Ghost-Ping & Gestion des Threads
 - Dès que le streamer coupe son live, le bot détecte l'état hors ligne.
 - Le message Discord initial est **mis à jour sur place (edit in-place)** :
   - Le titre devient `⚫ [OFFLINE] [Streamer] n'est plus en direct`.
@@ -105,12 +105,17 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
   - La durée totale de la diffusion (ex: `2h 15min`) et le dernier jeu joué sont affichés.
   - Le bouton d'action devient `🎬 Voir la chaîne / Replay`.
   - Le contenu textuel de mentions est **vidé** pour éliminer tout risque de *ghost-ping*.
+- **Threads Discord dédiés (`createThread: true`)** :
+  - Un fil de discussion Discord peut être ouvert automatiquement sous l'annonce de direct pour centraliser les réactions communautaires.
+  - À la clôture du live, le fil reçoit un message annonçant la fin de la diffusion puis est archivé automatiquement (`threadAutoArchiveDuration`).
+- **Attribution automatique de rôle (`subscriberRoleId`)** :
+  - Un rôle dédié peut être assigné aux membres dès qu'ils cliquent sur le bouton d'abonnement ou via `/feed subscribe`.
 - La session est archivée en base de données.
 
 ### 4.3 Webhooks Entrants & Fallback Polling
 - **Twitch EventSub** (`POST /api/webhooks/twitch` et `/api/autofeeds/webhooks/twitch`) : supporte la vérification du challenge (`webhook_callback_verification`) et les événements `stream.online` / `stream.offline`.
 - **YouTube WebSub (PubSubHubbub)** (`GET/POST /api/webhooks/youtube`) : supporte la vérification `hub.challenge` et l'ingestion XML immédiate.
-- En cas de coupure ou d'absence de configuration webhook, le cycle de scrutation en arrière-plan (`pollFeeds`) assure le fallback transparent automatique.
+- En cas de coupure ou d'absence de configuration webhook, le cycle de scrutation en arrière-plan (`pollFeeds`) assure le fallback transparent automatique sans nécessiter aucun compte développeur.
 
 ---
 
@@ -119,12 +124,14 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | Commande | Permissions | Description |
 | :--- | :--- | :--- |
 | `/feed list` | Tous | Affiche la liste des flux actifs sur le serveur |
+| `/feed streamers` | Tous | Affiche le statut en temps réel (🔴 EN DIRECT ou ⚫ Hors ligne) de tous les streamers configurés |
 | `/feed add url:<url> channel:<#salon> [nom] [categorie] [tags] [intervalle]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit, X, Twitch...) |
 | `/feed presets` | Admin | Affiche le catalogue LootScraper et permet l'installation en 1 bouton |
+| `/feed pause id:<id>` | Admin | Met en pause ou réactive un flux sans le supprimer |
 | `/feed delete id:<id>` | Admin | Supprime un flux enregistré |
 | `/feed test id:<id>` | Admin | Force la vérification immédiate et prévisualise l'embed dans Discord |
-| `/feed subscribe [tag] [compte] [categorie] [mot_cle] [flux_id] [mode]` | Tous | S'abonne aux notifications (mention dans le salon ou DM privé) |
-| `/feed unsubscribe [tag] [compte] [categorie] [mot_cle] [flux_id]` | Tous | Supprime un abonnement actif |
+| `/feed subscribe [tag] [compte] [categorie] [mot_cle] [flux_id] [mode]` | Tous | S'abonne aux notifications (mention salon, DM, les deux, ou rôle dédié) |
+| `/feed unsubscribe [tag] [compte] [categorie] [mot_cle] [flux_id]` | Tous | Supprime un abonnement actif et retire le rôle attribué |
 | `/feed my-subscriptions` | Tous | Affiche la liste de ses alertes et abonnements personnels |
 
 ---
@@ -132,14 +139,14 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 ## 6. Endpoints REST API (`/api/autofeeds` & `/api/webhooks`)
 
 - `GET /api/autofeeds` : Liste des flux configurés pour la guilde active.
-- `POST /api/autofeeds` : Création d'un flux (accepte syntaxe complète camelCase ou snake_case).
+- `POST /api/autofeeds` : Création d'un flux (supporte `createThread`, `subscriberRoleId`, `notificationDelivery`).
 - `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit, Google News).
 - `POST /api/autofeeds/presets/install` : Installation d'un preset en 1-clic (`{ presetId, channelId }`).
 - `GET /api/autofeeds/providers` : Liste des 12 fournisseurs et capacités.
 - `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `guild_id` ou `user_id`).
-- `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification et filtres personnels.
+- `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification (`channel`, `dm`, `both`, `role`).
 - `DELETE /api/autofeeds/subscriptions/:id` : Suppression d'une souscription.
-- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (statut, intervalle, filtres, tags, couleur, message personnalisé, ping rôle).
+- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (options de stream, threads, rôle dédié, statut, intervalle, filtres, tags, couleur).
 - `DELETE /api/autofeeds/:id` : Suppression d'un flux.
 - `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
 - `POST /api/webhooks/twitch` : Webhook EventSub Twitch (challenge verification + notifications stream.online / stream.offline).
@@ -150,10 +157,24 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 
 ## 7. Interface Dashboard Nuxt 4
 
-Accessible sur le dashboard via la section **Modules** :
+Accessible sur le dashboard via la section **Modules** et **Configuration** :
 - **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.
-- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, bouton de test direct ⚡ et modal d'ajout/édition avec section accordéon dédiée aux options de stream.
+- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, badges `⚠️ En erreur (X/10)`, `🧵 Thread`, `🏷️ Rôle auto`, bouton de test direct ⚡ et modal d'ajout/édition avec gestion des threads et rôles d'abonnés.
 - **🎁 Catalogue & LootScraper** (`/modules/autofeeds/presets`) : Grille de cartes prêtes à l'emploi pour LootScraper (Epic, Steam, GOG, Prime, Itch.io) avec installation en 1-clic.
 - **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau complet des souscriptions membres avec badges colorés (Tag, Compte, Catégorie, Mot-clé, Flux), filtres personnels et création/suppression.
 - **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 12 sources opérationnelles avec formats d'URL supportés et exemples.
+- **⚙️ Configuration Globale** (`/config/autofeeds`) : Clés Twitch & YouTube par défaut, cadences d'interrogation (lives 2m, vidéos 15m, RSS 30m), seuils d'erreurs et salon de log Discord global.
+- **🛡️ Configuration Serveur** (`/panel/[guild]/config/autofeeds`) : Surcharges spécifiques par serveur (clés d'API dédiées, salon de logs serveur, alertes d'erreurs).
+
+---
+
+## 8. Surveillance de Santé, Circuit Breaker & Résilience
+
+Pour protéger les ressources du bot et du serveur Discord :
+1. **Compteur d'échecs (`failCount`)** : Chaque échec d'accès à un flux (timeout, 404, parsing) incrémente un compteur dédié.
+2. **Badge visuel d'avertissement** : Dès le premier échec, un badge `⚠️ En erreur (X/10)` s'affiche sur la carte du flux dans le dashboard avec le détail du message d'erreur au survol.
+3. **Alerte modérateur / admin log** : Après **3 échecs consécutifs**, le bot poste automatiquement une alerte dans le salon de logs configuré (`log_channel_id`).
+4. **Disjoncteur automatique (Circuit Breaker)** : Après **10 échecs consécutifs**, le flux est **automatiquement désactivé** (`isActive: false`) pour éviter le spam réseau et préserver les quotas d'API, et un avertissement final est consigné dans les logs.
+5. **Rétablissement transparent** : Dès qu'une vérification réussit (ou lors d'un test manuel ⚡ réussi), le compteur `failCount` est immédiatement remis à zéro et le statut repasse en `ok`.
+
 
