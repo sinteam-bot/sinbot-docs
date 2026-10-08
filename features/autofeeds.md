@@ -1,18 +1,18 @@
 # Feature : Flux RSS, LootScraper & Alertes Multi-Sources
 
-> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (40 tests vitest dédiés, 102/102 suites au vert, 905/905 tests globaux) et intégré au Dashboard Nuxt 4.
+> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (46 tests vitest dédiés dans `autofeeds-advanced.test.js`, 102/102 suites au vert, 911/911 tests globaux) et intégré au Dashboard Nuxt 4.
 
 ---
 
 ## 1. Objectif & Inspirations
 
-Permettre à un serveur Discord d'agréger, filtrer et diffuser des flux d'actualités, vidéos, streams et bons plans en continu à l'instar des solutions :
+Permettre à un serveur Discord d'agréger, filtrer et diffuser des flux d'actualités, vidéos, streams, bons plans, releases logicielles et alertes d'incidents en continu à l'instar des solutions :
 - [MonitorRSS](https://monitorss.xyz/)
 - [RSS.app Discord Bot](https://rss.app/bots/rssfeeds-discord-bot)
 - [ReadyBot.io](https://readybot.io/)
 - [FeedSync.net](https://feedsync.net/)
 
-Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, auteurs/comptes, catégories ou mots-clés**, et une architecture modulaire **multi-sources de 13 connecteurs unifiés**.
+Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, auteurs/comptes, catégories ou mots-clés**, un système de gamification **Drop Hunter**, une **Gazette / Digest périodique**, et une architecture modulaire **multi-sources de 16 connecteurs unifiés**.
 
 ---
 
@@ -85,6 +85,39 @@ Quand l'option `useWebhook: true` est activée sur un flux :
 - 📥 **Import OPML XML standard** : migration et import en masse depuis Feedly, Inoreader, Thunderbird ou d'autres bots via `/api/autofeeds/opml/import`.
 - 📤 **Export OPML XML standard** : sauvegarde complète de la configuration des flux du serveur au format universel via `/api/autofeeds/opml/export`.
 
+### 2.10 Gazette Périodique & Mode Digest (`autofeeds-digest.service.js`)
+Pour éviter le bruit et le spam de messages individuels, un flux peut être configuré en mode **Digest** :
+- `digestMode`: `'realtime'` (par défaut), `'daily'`, ou `'weekly'`.
+- `digestSchedule`: Heure ou jour programmé (ex. `'08:00'`, `'18:00'`, `'monday 09:00'`).
+- `digestChannelId`: Salon dédié optionnel pour la gazette récapitulative.
+- Les articles détectés sont accumulés dans une file d'attente tampon, puis compilés dans un **Embed récapitulatif enrichi** (Gazette) avec compteurs, liens directs, et synthèse IA optionnelle.
+- Peut également être déclenché à la demande via la commande slash `/feed digest id:<id>`.
+
+### 2.11 Gamification "Drop Hunter" & Récompenses XP (`autofeeds-gamification.service.js`)
+Sur les flux de bons plans et freebies (LootScraper, r/GameDeals, Giveaways), activez l'engagement communautaire :
+- `enableGamification`: active le bouton interactif `🎁 J'ai récupéré l'offre ! (0)`.
+- `gamificationXpReward`: montant d'XP attribué par claim (par défaut 15 XP).
+- **Anti-double claim** : chaque utilisateur ne peut valider un bon plan qu'une seule fois par article (persistance dans `autofeed_claims`).
+- **Attribution XP & Niveaux** : interaction directe avec le module `progression_leveling` si installé, ajout d'XP et notification éphémère personnalisée.
+- **Mise à jour dynamique** : le compteur de claims affiché sur le bouton Discord s'incrémente automatiquement en temps réel (`🎁 J'ai récupéré l'offre ! (12)`).
+
+### 2.12 Routage Intelligent Multi-Salons par Tag (`autofeeds.service.js`)
+Un seul flux peut diffuser dans plusieurs salons différents selon le contenu :
+- `channelTagRouting`: Objet JSON de correspondance tag ➔ salon ID (ex: `{ "#epic": "111111", "#steam": "222222", "#prime": "333333" }`).
+- Si un article correspond à l'un des tags mappés, il est automatiquement routé vers le salon spécifique au lieu du salon par défaut.
+- Fallback transparent sur le `channelId` principal si aucun tag ne correspond.
+
+### 2.13 Heures Silencieuses & Régulateur Anti-Flood (`autofeeds-ratelimit.service.js`)
+Pour préserver la tranquillité de la communauté pendant la nuit ou lors de rafales d'actualités :
+- `quietHours`: Configuration JSON `{ enabled: true, start: "23:00", end: "07:00", suppressMentions: true }`.
+  - Pendant cette plage horaire, les mentions globales et pings de rôles sont automatiquement supprimés du message (`suppressMentions: true`).
+- `maxPostsPerHour`: Limite de cadence glissante (ex: max 5 posts/heure). Les articles excédentaires sont différés pour éviter le flood soudain d'un salon.
+
+### 2.14 Moteur de Recherche Plein Texte & Analytics des Liens
+- **Recherche historique** : Recherche plein texte parmi les publications archivées sur le serveur via `/feed search query:<terme>` ou `GET /api/autofeeds/search`.
+- **Statistiques & Métriques** : Métriques complètes de diffusion via `/feed stats` ou `GET /api/autofeeds/stats` (total des posts, top fournisseurs, tags populaires, total des claims Drop Hunter).
+- **Tracking des Clics** : Comptabilisation des clics sur les boutons d'action via `POST /api/autofeeds/clicks`.
+
 ---
 
 ## 3. Architecture Multi-Sources (`services/providers/`)
@@ -106,6 +139,9 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | **Instagram** | 🟢 Opérationnel | Profils publics Instagram (passerelle RSSHub) | Photos, carrousels, auteur, tags |
 | **Facebook** | 🟢 Opérationnel | Pages publiques Facebook (passerelle RSSHub) | Publications officielles, auteur, liens |
 | **LinkedIn** | 🟢 Opérationnel | Entreprises LinkedIn (passerelle RSSHub) | Actualités d'entreprises, offres de recrutement |
+| **GitHub Releases & Tags** | 🟢 Opérationnel | `owner/repo`, releases.atom, tags.atom | Releases, tags semver, changelogs, auteur, date, tags automatiques |
+| **GitLab Tags & Releases** | 🟢 Opérationnel | `owner/repo`, tags atom, URL GitLab | Tags, releases, auteur, date, tags automatiques |
+| **Statuspage & Incidents** | 🟢 Opérationnel | Discord Status, Cloudflare, GitHub Status, Statuspage XML | Incidents majeurs, composants dégradés, résolutions, sévérité, statut incident |
 
 ---
 
@@ -152,11 +188,14 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | `/feed list` | Tous | Affiche la liste des flux actifs sur le serveur |
 | `/feed menu` | Tous | Affiche un menu déroulant interactif pour s'abonner en 1 clic à plusieurs flux |
 | `/feed streamers` | Tous | Affiche le statut en temps réel (🔴 EN DIRECT ou ⚫ Hors ligne) de tous les streamers configurés |
-| `/feed add url:<url> channel:<#salon> [nom] [categorie] [tags] [intervalle]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit, X, Twitch...) |
+| `/feed add url:<url> channel:<#salon> [nom] [categorie] [tags] [intervalle]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit, X, Twitch, GitHub...) |
 | `/feed presets` | Admin | Affiche le catalogue LootScraper et permet l'installation en 1 bouton |
 | `/feed pause id:<id>` | Admin | Met en pause ou réactive un flux sans le supprimer |
 | `/feed delete id:<id>` | Admin | Supprime un flux enregistré |
 | `/feed test id:<id>` | Admin | Force la vérification immédiate et prévisualise l'embed dans Discord |
+| `/feed search query:<texte> [limit]` | Tous | Recherche plein texte dans l'historique des publications archivées |
+| `/feed stats` | Tous | Affiche les statistiques globales (publications, claims Drop Hunter, top sources) |
+| `/feed digest id:<id> [channel]` | Admin | Déclenche immédiatement la compilation et l'envoi de la gazette récapitulative |
 | `/feed subscribe [tag] [compte] [categorie] [mot_cle] [flux_id] [mode]` | Tous | S'abonne aux notifications (mention salon, DM, les deux, ou rôle dédié) |
 | `/feed unsubscribe [tag] [compte] [categorie] [mot_cle] [flux_id]` | Tous | Supprime un abonnement actif et retire le rôle attribué |
 | `/feed my-subscriptions` | Tous | Affiche la liste de ses alertes et abonnements personnels |
@@ -166,16 +205,19 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 ## 6. Endpoints REST API (`/api/autofeeds` & `/api/webhooks`)
 
 - `GET /api/autofeeds` : Liste des flux configurés pour la guilde active.
-- `POST /api/autofeeds` : Création d'un flux (supporte `useWebhook`, `enableMediaProxy`, `ignoreShorts`, `aiSummary`, `aiTranslate`, `createThread`, `subscriberRoleId`, `notificationDelivery`).
+- `POST /api/autofeeds` : Création d'un flux (supporte `useWebhook`, `enableMediaProxy`, `ignoreShorts`, `aiSummary`, `aiTranslate`, `createThread`, `subscriberRoleId`, `notificationDelivery`, `digestMode`, `digestSchedule`, `digestChannelId`, `enableGamification`, `gamificationXpReward`, `channelTagRouting`, `quietHours`, `maxPostsPerHour`).
+- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux et de l'ensemble de ses paramètres avancés.
+- `DELETE /api/autofeeds/:id` : Suppression d'un flux.
+- `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
+- `GET /api/autofeeds/stats` : Statistiques de diffusion (total publications, total clics, total claims Drop Hunter, top fournisseurs, tags populaires).
+- `GET /api/autofeeds/search` : Recherche plein texte dans l'historique (`q=<terme>&limit=20`).
+- `POST /api/autofeeds/claims` : Validation d'un claim Drop Hunter et attribution de l'XP (`{ feedId, itemId, userId }`).
 - `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit, Google News).
 - `POST /api/autofeeds/presets/install` : Installation d'un preset en 1-clic (`{ presetId, channelId }`).
-- `GET /api/autofeeds/providers` : Liste des 13 fournisseurs et capacités.
+- `GET /api/autofeeds/providers` : Liste des 16 fournisseurs et leurs capacités.
 - `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `guild_id` ou `user_id`).
 - `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification (`channel`, `dm`, `both`, `role`).
 - `DELETE /api/autofeeds/subscriptions/:id` : Suppression d'une souscription.
-- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (options de webhook, IA, filtres média, threads, rôle dédié, statut, intervalle, filtres, tags, couleur).
-- `DELETE /api/autofeeds/:id` : Suppression d'un flux.
-- `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
 - `POST /api/autofeeds/opml/import` : Import en masse d'un fichier OPML XML vers un salon cible.
 - `GET /api/autofeeds/opml/export` : Export de l'ensemble des flux d'un serveur au format standard OPML XML.
 - `POST /api/webhooks/twitch` : Webhook EventSub Twitch (challenge verification + notifications stream.online / stream.offline).
@@ -187,11 +229,11 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 ## 7. Interface Dashboard Nuxt 4
 
 Accessible sur le dashboard via la section **Modules** et **Configuration** :
-- **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.
-- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, boutons **Import OPML** et **Export OPML**, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, badges `⚠️ En erreur (X/10)`, `🧵 Thread`, `🏷️ Rôle auto`, bouton de test direct ⚡ et modal d'ajout/édition avec gestion des options avancées (Webhooks personnalisés, Résumés IA, Proxies multimédia, Filtre Shorts, Threads et Rôles d'abonnés).
+- **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques (Publications, Claims Drop Hunter, 16 fournisseurs), recherche plein texte interactive, héro LootScraper, flux récents et guide des commandes.
+- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion avec icônes de source (dont 🐙 GitHub, 🦊 GitLab, 📊 Statuspage, 🦋 Bluesky), boutons **Import OPML** et **Export OPML**, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, badges `⚠️ En erreur (X/10)`, `🧵 Thread`, `🏷️ Rôle auto`, bouton de test direct ⚡ et modal d'ajout/édition avec gestion des options avancées (Gazette/Digest, Drop Hunter Gamification, Heures silencieuses, Routage multi-salons par tag, Webhooks personnalisés, Résumés IA, Proxies multimédia, Filtre Shorts, Threads et Rôles d'abonnés).
 - **🎁 Catalogue & LootScraper** (`/modules/autofeeds/presets`) : Grille de cartes prêtes à l'emploi pour LootScraper (Epic, Steam, GOG, Prime, Itch.io) avec installation en 1-clic.
 - **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau complet des souscriptions membres avec badges colorés (Tag, Compte, Catégorie, Mot-clé, Flux), filtres personnels et création/suppression.
-- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 13 sources opérationnelles avec formats d'URL supportés et exemples.
+- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 16 sources opérationnelles avec formats d'URL supportés et exemples.
 - **⚙️ Configuration Globale** (`/config/autofeeds`) : Clés Twitch & YouTube par défaut, cadences d'interrogation (lives 2m, vidéos 15m, RSS 30m), seuils d'erreurs et salon de log Discord global.
 - **🛡️ Configuration Serveur** (`/panel/[guild]/config/autofeeds`) : Surcharges spécifiques par serveur (clés d'API dédiées, salon de logs serveur, alertes d'erreurs).
 
@@ -205,5 +247,6 @@ Pour protéger les ressources du bot et du serveur Discord :
 3. **Alerte modérateur / admin log** : Après **3 échecs consécutifs**, le bot poste automatiquement une alerte dans le salon de logs configuré (`log_channel_id`).
 4. **Disjoncteur automatique (Circuit Breaker)** : Après **10 échecs consécutifs**, le flux est **automatiquement désactivé** (`isActive: false`) pour éviter le spam réseau et préserver les quotas d'API, et un avertissement final est consigné dans les logs.
 5. **Rétablissement transparent** : Dès qu'une vérification réussit (ou lors d'un test manuel ⚡ réussi), le compteur `failCount` est immédiatement remis à zéro et le statut repasse en `ok`.
+
 
 
