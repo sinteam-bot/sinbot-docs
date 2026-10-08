@@ -1,0 +1,49 @@
+# Autofeeds Module — Tâches & Feuille de Route
+
+## Statut Global : Complété & Validé ✅
+
+- [x] **Moteur Core Multi-Sources**
+  - [x] Provider Registry avec auto-détection d'URL
+  - [x] Connecteurs : RSS/Atom, YouTube, Reddit, Google News
+  - [x] Connecteurs réseaux sociaux : Twitch, Kick, X/Twitter, TikTok, Instagram, Facebook, LinkedIn
+- [x] **Moteur de Filtrage Avancé**
+  - [x] Mots-clés requis (`includeKeywords` / `filterKeywords`)
+  - [x] Mots-clés interdits (`excludeKeywords`)
+  - [x] Mots-clés spécifiques au titre (`titleKeywords`, `excludeTitleKeywords`)
+  - [x] Filtrage par auteur (`authorInclude`, `authorExclude`)
+  - [x] Filtrage par tags XML / flairs Reddit (`tagInclude`, `tagExclude`)
+  - [x] Filtre présence de média (`requireMedia`)
+  - [x] Expressions régulières (`regexFilter`)
+- [x] **Système de Souscriptions Membres**
+  - [x] Souscription par tag (`#epic`, `#steam`, `#prime`...)
+  - [x] Souscription par compte / auteur (`@PlayStation`, `@Zerator`...)
+  - [x] Souscription par catégorie (`gaming`, `news`, `tech`...)
+  - [x] Souscription par mot-clé libre (`100% off`, `giveaway`...)
+  - [x] Souscription par flux spécifique
+  - [x] Modes de notification : Mention dans le salon Discord ou Message Privé (DM)
+  - [x] Filtres personnels pour les abonnés (mots-clés et regex personnels)
+  - [x] Boutons interactifs Discord sous chaque publication (Voir article, Suivre #tag, Suivre @auteur)
+- [x] **Catalogue Presets & LootScraper**
+  - [x] Presets LootScraper (Tous les jeux gratuits, Epic, Steam, GOG, Prime Gaming, Itch.io)
+  - [x] Presets Reddit (r/FreeGameFindings, r/GameDeals)
+  - [x] Installation en 1-clic depuis le dashboard Nuxt ou via Discord `/feed presets`
+- [x] **Commandes Slash Discord**
+  - [x] `/feed add`, `/feed list`, `/feed presets`, `/feed delete`, `/feed test`
+  - [x] `/feed subscribe`, `/feed unsubscribe`, `/feed my-subscriptions`
+  - [x] Alias `/autofeed` pour compatibilité
+- [x] **API REST & Contrôleur**
+  - [x] Routes CRUD `/api/autofeeds`
+  - [x] Routes `/api/autofeeds/presets` et `/api/autofeeds/presets/install`
+  - [x] Routes `/api/autofeeds/providers`
+  - [x] Routes `/api/autofeeds/subscriptions`
+  - [x] Route `/api/autofeeds/:id/test`
+- [x] **Dashboard Frontend Nuxt 3**
+  - [x] Vue d'ensemble (`/modules/autofeeds/overview`)
+  - [x] Gestion des flux (`/modules/autofeeds/list`)
+  - [x] Presets LootScraper (`/modules/autofeeds/presets`)
+  - [x] Souscriptions membres (`/modules/autofeeds/subscriptions`)
+  - [x] Fournisseurs (`/modules/autofeeds/providers`)
+- [x] **Validation & Tests**
+  - [x] 21 tests unitaires et d'intégration vitest dans `tests/autofeeds-advanced.test.js`
+  - [x] 102/102 fichiers de tests backend validés (886 tests)
+  - [x] Compilation et build de production Nuxt 3 validés

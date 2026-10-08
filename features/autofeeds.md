@@ -1,18 +1,18 @@
 # Feature : Flux RSS, LootScraper & Alertes Multi-Sources
 
-> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (15 tests vitest dédiés) et intégré au Dashboard Nuxt 3.
+> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (21 tests vitest dédiés, 102/102 suites au vert) et intégré au Dashboard Nuxt 3.
 
 ---
 
 ## 1. Objectif & Inspirations
 
-Permettre à un serveur Discord d'agréger, filtrer et diffuser des flux d'actualités et bons plans en continu à l'instar des solutions :
+Permettre à un serveur Discord d'agréger, filtrer et diffuser des flux d'actualités, vidéos, streams et bons plans en continu à l'instar des solutions :
 - [MonitorRSS](https://monitorss.xyz/)
 - [RSS.app Discord Bot](https://rss.app/bots/rssfeeds-discord-bot)
 - [ReadyBot.io](https://readybot.io/)
 - [FeedSync.net](https://feedsync.net/)
 
-Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, catégories ou mots-clés**, et une architecture modulaire **multi-sources extensible**.
+Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, auteurs/comptes, catégories ou mots-clés**, et une architecture modulaire **multi-sources de 11 connecteurs unifiés**.
 
 ---
 
@@ -29,47 +29,56 @@ Catalogue de flux pré-paramétrés prêts à être installés dans n'importe qu
 - 🤖 **Reddit r/FreeGameFindings** & **r/GameDeals**
 - 📰 **Google News Tech & Gaming**
 
-### 2.2 Souscriptions Membres par Tags & Alertes Personnalisées (`autofeeds-subscription.service.js`)
+### 2.2 Souscriptions Membres par Tags, Comptes & Alertes Personnalisées (`autofeeds-subscription.service.js`)
 Les membres du serveur Discord peuvent s'abonner individuellement pour être alertés dès qu'une publication correspond à leurs centres d'intérêt :
 - **Par Tag** : ex. `#epic`, `#steam`, `#prime`, `#ps5`, `#gratuit`
+- **Par Compte / Auteur** : ex. `@PlayStation`, `@Zerator`, `@Dealabs`
 - **Par Catégorie** : ex. `gaming`, `news`, `tech`, `deals`
 - **Par Mots-clés** : ex. `100% off`, `giveaway`, `rtx 4090`
 - **Par Flux spécifique** ou sur tous les flux du serveur
+- **Filtres personnels d'abonné** : chaque abonné peut restreindre ses alertes avec ses propres mots-clés requis (`includeKeywords`), mots-clés interdits (`excludeKeywords`) ou regex (`regexFilter`).
 - **Modes de notification flexibles** :
   - 📢 **Mention dans le salon** : mentionne l'utilisateur (`<@userId>`) lors de la publication dans le salon Discord.
   - 📩 **Message Privé (DM)** : envoie une copie privée de l'annonce directement en DM par le bot.
 
-### 2.3 Bouton Interactif d'Abonnement en 1-Clic sous chaque Message
-Chaque publication postée dans Discord inclut un bouton d'action interactif :
-- 🔗 **Voir l'offre / l'article** (bouton lien vers la source).
-- 🔔 **M'alerter pour #[tag]** (bouton composant Discord).
-En cliquant dessus, le membre est instantanément abonné au tag sans avoir besoin de taper une commande !
+### 2.3 Boutons Interactifs d'Abonnement en 1-Clic sous chaque Message Discord
+Chaque publication postée dans Discord inclut une rangée d'actions interactives :
+- 🔗 **Voir l'article** (bouton lien direct vers la source officielle).
+- 🔔 **Suivre #[tag]** (bouton composant Discord pour s'abonner instantanément au tag principal).
+- 👤 **Suivre @[auteur]** (bouton composant Discord pour s'abonner aux publications de ce créateur/compte).
+
+En cliquant dessus, le membre est instantanément abonné sans avoir besoin de taper une commande slash !
 
 ### 2.4 Moteur de Filtrage Avancé (`base.provider.js`)
 Chaque flux peut être restreint par des filtres précis :
-- `filterKeywords` : liste de mots-clés requis (la publication doit contenir au moins un des mots).
-- `excludeKeywords` : liste de mots-clés interdits (la publication est ignorée si l'un des mots est présent, ex. `dlc`, `beta`).
-- `regexFilter` : expression régulière personnalisée pour les utilisateurs avancés.
+- `includeKeywords` (ou `filterKeywords`) : mots-clés requis dans le titre ou le contenu.
+- `excludeKeywords` : mots-clés interdits (ex. `dlc`, `beta`, `payant`).
+- `titleKeywords` : mots-clés requis spécifiquement dans le titre.
+- `excludeTitleKeywords` : mots-clés interdits dans le titre.
+- `authorInclude` / `authorExclude` : liste blanche ou liste noire d'auteurs (ex. exclure `AutoModerator`).
+- `tagInclude` / `tagExclude` : filtres de tags XML ou de flairs Reddit.
+- `requireMedia` : impose la présence d'une image ou d'un média pour publier l'article.
+- `regexFilter` : expression régulière personnalisée insensible à la casse.
 
 ---
 
 ## 3. Architecture Multi-Sources (`services/providers/`)
 
-Le bot utilise le pattern **`ProviderRegistry`** qui détecte automatiquement le connecteur adapté selon l'URL :
+Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte automatiquement le connecteur adapté selon l'URL ou l'identifiant saisi :
 
 | Fournisseur | Statut | Types de Cibles | Métadonnées extraites |
 | :--- | :---: | :--- | :--- |
-| **RSS / Atom Universel** | 🟢 Opérationnel | Tous sites, WordPress, blogs, LootScraper | Titre, résumé HTML nettoyé, images/enclosures, tags |
-| **YouTube** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture |
+| **RSS / Atom Universel** | 🟢 Opérationnel | Tous sites, WordPress, blogs, LootScraper, XML | Titre, résumé HTML nettoyé, images/enclosures, tags XML, dates |
+| **YouTube** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture direct, auteur |
 | **Reddit** | 🟢 Opérationnel | `r/subreddit`, URL Reddit | Miniatures Reddit, flairs convertis en tags, auteur |
 | **Google News** | 🟢 Opérationnel | Requêtes de recherche, sujets thématiques | Titre, source média, lien canonique |
-| **Twitch** | 🟡 En Roadmap | Streamers, chaînes, jeux | Statut live, aperçu de stream, catégorie de jeu |
-| **Kick** | 🟡 En Roadmap | Streamers Kick | Alertes de live instantanées |
-| **X / Twitter** | 🟡 En Roadmap | Comptes `@user`, hashtags, passerelle Nitter | Tweets, retweets, médias attachés |
-| **TikTok** | 🟡 En Roadmap | Comptes créateurs, sons | Nouvelles vidéos publiées |
-| **Instagram** | 🟡 En Roadmap | Profils publics | Photos, carrousels, descriptions |
-| **Facebook** | 🟡 En Roadmap | Pages publiques | Publications officielles |
-| **LinkedIn** | 🟡 En Roadmap | Entreprises, recrutements | Offres d'emploi, posts d'actualités |
+| **X / Twitter** | 🟢 Opérationnel | Comptes `@user`, URLs `x.com` / `twitter.com`, Nitter | Tweets, retweets, liens officiels, hashtags convertis en tags |
+| **TikTok** | 🟢 Opérationnel | Comptes créateurs `@user`, URLs TikTok, ProxiTok | Vidéos, liens canoniques TikTok, auteur |
+| **Twitch** | 🟢 Opérationnel | Chaînes Twitch, streamers | Statut live temps réel, jeu/catégorie, nombre de spectateurs, miniature |
+| **Kick** | 🟢 Opérationnel | Chaînes Kick, streamers | Statut live, aperçu de stream, catégorie de jeu |
+| **Instagram** | 🟢 Opérationnel | Profils publics Instagram (passerelle RSSHub) | Photos, carrousels, auteur, tags |
+| **Facebook** | 🟢 Opérationnel | Pages publiques Facebook (passerelle RSSHub) | Publications officielles, auteur, liens |
+| **LinkedIn** | 🟢 Opérationnel | Entreprises LinkedIn (passerelle RSSHub) | Actualités d'entreprises, offres de recrutement |
 
 ---
 
@@ -78,37 +87,37 @@ Le bot utilise le pattern **`ProviderRegistry`** qui détecte automatiquement le
 | Commande | Permissions | Description |
 | :--- | :--- | :--- |
 | `/feed list` | Tous | Affiche la liste des flux actifs sur le serveur |
-| `/feed add url:<url> channel:<#salon> [name] [category] [tags]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit...) |
+| `/feed add url:<url> channel:<#salon> [nom] [categorie] [tags] [intervalle]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit, X, Twitch...) |
 | `/feed presets` | Admin | Affiche le catalogue LootScraper et permet l'installation en 1 bouton |
 | `/feed delete id:<id>` | Admin | Supprime un flux enregistré |
-| `/feed test id:<id>` | Admin | Force la vérification immédiate et envoie un exemple dans Discord |
-| `/feed subscribe [tag] [category] [keyword] [mode:mention\|dm]` | Tous | S'abonne aux notifications pour un tag ou une catégorie |
-| `/feed unsubscribe id:<subId>` | Tous | Supprime un abonnement actif |
-| `/feed my-subscriptions` | Tous | Affiche ses alertes et abonnements personnels |
+| `/feed test id:<id>` | Admin | Force la vérification immédiate et prévisualise l'embed dans Discord |
+| `/feed subscribe [tag] [compte] [categorie] [mot_cle] [flux_id] [mode]` | Tous | S'abonne aux notifications (mention dans le salon ou DM privé) |
+| `/feed unsubscribe [tag] [compte] [categorie] [mot_cle] [flux_id]` | Tous | Supprime un abonnement actif |
+| `/feed my-subscriptions` | Tous | Affiche la liste de ses alertes et abonnements personnels |
 
 ---
 
 ## 5. Endpoints REST API (`/api/autofeeds`)
 
 - `GET /api/autofeeds` : Liste des flux configurés pour la guilde active.
-- `POST /api/autofeeds` : Création d'un flux.
-- `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit...).
+- `POST /api/autofeeds` : Création d'un flux (accepte syntaxe complète camelCase ou snake_case).
+- `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit, Google News).
 - `POST /api/autofeeds/presets/install` : Installation d'un preset en 1-clic (`{ presetId, channelId }`).
-- `GET /api/autofeeds/providers` : Liste des fournisseurs et capacités.
-- `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `userId` ou `feedId`).
-- `POST /api/autofeeds/subscriptions` : Création d'une souscription.
+- `GET /api/autofeeds/providers` : Liste des 11 fournisseurs et capacités.
+- `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `guild_id` ou `user_id`).
+- `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification et filtres personnels.
 - `DELETE /api/autofeeds/subscriptions/:id` : Suppression d'une souscription.
-- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (statut, intervalle, filtres, tags).
+- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (statut, intervalle, filtres, tags, couleur).
 - `DELETE /api/autofeeds/:id` : Suppression d'un flux.
-- `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux.
+- `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
 
 ---
 
 ## 6. Interface Dashboard Nuxt 3
 
 Accessible sur le dashboard via la section **Modules** :
-- **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques, raccourci LootScraper, flux récents et guide des commandes.
-- **📰 Flux configurés** (`/modules/autofeeds/list`) : Tableau de gestion, filtres par catégorie, switch actif/pause, bouton de test direct et modal d'ajout complet avec sélecteur de salon Discord.
+- **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.
+- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtrage par catégorie, switch actif/pause, bouton de test direct ⚡ et modal d'ajout/édition avec sélecteur de salon Discord.
 - **🎁 Catalogue & LootScraper** (`/modules/autofeeds/presets`) : Grille de cartes prêtes à l'emploi pour LootScraper (Epic, Steam, GOG, Prime, Itch.io) avec installation en 1-clic.
-- **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau des souscriptions utilisateurs, badges de mode (Mention / DM) et création/suppression.
-- **🌐 Fournisseurs & Roadmap** (`/modules/autofeeds/providers`) : Fiches techniques des 11 sources (opérationnelles et prévues).
+- **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau complet des souscriptions membres avec badges colorés (Tag, Compte, Catégorie, Mot-clé, Flux), filtres personnels et création/suppression.
+- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 11 sources opérationnelles avec formats d'URL supportés et exemples.
