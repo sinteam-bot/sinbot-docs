@@ -1,6 +1,6 @@
 # Feature : Flux RSS, LootScraper & Alertes Multi-Sources
 
-> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (21 tests vitest dédiés, 102/102 suites au vert) et intégré au Dashboard Nuxt 4.
+> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (40 tests vitest dédiés, 102/102 suites au vert, 905/905 tests globaux) et intégré au Dashboard Nuxt 4.
 
 ---
 
@@ -12,7 +12,7 @@ Permettre à un serveur Discord d'agréger, filtrer et diffuser des flux d'actua
 - [ReadyBot.io](https://readybot.io/)
 - [FeedSync.net](https://feedsync.net/)
 
-Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, auteurs/comptes, catégories ou mots-clés**, et une architecture modulaire **multi-sources de 11 connecteurs unifiés**.
+Le module intègre nativement les flux officiels de **[LootScraper](https://eikowagenknecht.com/lootscraper/)** (agrégateur de jeux PC/consoles 100% gratuits), un système d'**abonnements individuels par tags, auteurs/comptes, catégories ou mots-clés**, et une architecture modulaire **multi-sources de 13 connecteurs unifiés**.
 
 ---
 
@@ -60,6 +60,31 @@ Chaque flux peut être restreint par des filtres précis :
 - `requireMedia` : impose la présence d'une image ou d'un média pour publier l'article.
 - `regexFilter` : expression régulière personnalisée insensible à la casse.
 
+### 2.5 Résumés IA (TL;DR) & Traduction Automatique (`autofeeds-ai.service.js`)
+Intégration du modèle LLM OpenRouter pour enrichir les publications étrangères ou volumineuses :
+- 🤖 **TL;DR en 2-3 puces** (`aiSummary: true`) : extrait l'essentiel de l'article ou de l'annonce et l'ajoute comme champ dédié dans l'embed Discord.
+- 🇫🇷 **Traduction en Français** (`aiTranslate: true`) : traduit automatiquement le titre et le résumé de l'anglais vers le français avec conservation des termes techniques et noms propres.
+- ⚡ **Cache mémoire intelligent** : évite les appels redondants à l'API IA pour les publications récurrentes ou vérifications successives.
+
+### 2.6 Webhooks Discord Personnalisés & Usurpation Source (`autofeeds-webhook.service.js`)
+Quand l'option `useWebhook: true` est activée sur un flux :
+- 🎭 Le bot crée ou réutilise un Webhook Discord dédié dans le salon cible.
+- 👤 Le message est posté en arborant directement le **nom du créateur, de la chaîne ou du média** (ex. `Epic Games`, `Dealabs`, `Zerator`) et son **avatar officiel**, offrant un rendu visuel ultra-propre et immersif sans afficher l'avatar générique du bot.
+
+### 2.7 Intégration Média Avancée & Filtre Shorts (`youtube.provider.js`)
+- 🎬 **Embeds Vidéo Autoplay FxTwitter & vxTikTok** (`enableMediaProxy: true`) : réécrit automatiquement les liens `twitter.com`/`x.com` en `fxtwitter.com`, et `tiktok.com` en `vxtiktok.com` / `vm.vxtiktok.com`, permettant la lecture directe et fluide des vidéos dans le client Discord mobile et desktop.
+- 🚫 **Filtre anti-Shorts YouTube** (`ignoreShorts: true`) : détecte et élimine automatiquement les vidéos au format court (URLs `/shorts/`, tags `#shorts`, durées < 60s) pour ne relayer que les vidéos longues.
+
+### 2.8 Salons Forums Discord (`ForumChannel`) & Tags Automatiques
+- 🗂️ Détection automatique des salons Discord de type Forum (type 15 / `isThreadOnly`).
+- 🧵 Chaque nouvel article crée un nouveau fil de discussion (thread) avec le titre de la publication et le message en contenu initial.
+- 🏷️ Les tags du flux ou de l'article sont automatiquement mappés avec les `availableTags` du forum Discord pour appliquer les étiquettes correspondantes.
+
+### 2.9 Menu de Sélection Interactif (`/feed menu`) & Import / Export OPML XML
+- 📋 **Menu déroulant Discord** (`StringSelectMenuBuilder`) : la commande `/feed menu` génère une liste déroulante multi-sélection permettant aux membres de choisir en un clin d'œil tous les flux auxquels ils souhaitent s'abonner.
+- 📥 **Import OPML XML standard** : migration et import en masse depuis Feedly, Inoreader, Thunderbird ou d'autres bots via `/api/autofeeds/opml/import`.
+- 📤 **Export OPML XML standard** : sauvegarde complète de la configuration des flux du serveur au format universel via `/api/autofeeds/opml/export`.
+
 ---
 
 ## 3. Architecture Multi-Sources (`services/providers/`)
@@ -69,14 +94,15 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | Fournisseur | Statut | Types de Cibles | Métadonnées extraites |
 | :--- | :---: | :--- | :--- |
 | **RSS / Atom Universel** | 🟢 Opérationnel | Tous sites, WordPress, blogs, LootScraper, XML | Titre, résumé HTML nettoyé, images/enclosures, tags XML, dates |
-| **YouTube Vidéos** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture direct, auteur |
+| **YouTube Vidéos** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture direct, auteur, filtre Shorts |
 | **YouTube Live** | 🟢 Opérationnel | `@handle/live`, chaînes /live, WebSub | Détection temps réel des lives, statut en direct, thumbnail, passage offline automatique |
 | **Reddit** | 🟢 Opérationnel | `r/subreddit`, URL Reddit | Miniatures Reddit, flairs convertis en tags, auteur |
 | **Google News** | 🟢 Opérationnel | Requêtes de recherche, sujets thématiques | Titre, source média, lien canonique |
 | **Twitch** | 🟢 Opérationnel | Chaînes Twitch, streamers | Statut live temps réel, jeu/catégorie, nombre de spectateurs, miniature, clôture in-place |
 | **Kick** | 🟢 Opérationnel | Chaînes Kick, streamers | Statut live API v2, aperçu de stream, catégorie de jeu, clôture in-place |
-| **X / Twitter** | 🟢 Opérationnel | Comptes `@user`, URLs `x.com` / `twitter.com`, Nitter | Tweets, retweets, liens officiels, hashtags convertis en tags |
-| **TikTok** | 🟢 Opérationnel | Comptes créateurs `@user`, URLs TikTok, ProxiTok | Vidéos, liens canoniques TikTok, auteur |
+| **X / Twitter** | 🟢 Opérationnel | Comptes `@user`, URLs `x.com` / `twitter.com`, Nitter | Tweets, retweets, liens officiels, hashtags convertis en tags, proxy FxTwitter |
+| **TikTok** | 🟢 Opérationnel | Comptes créateurs `@user`, URLs TikTok, ProxiTok | Vidéos, liens canoniques TikTok, auteur, proxy vxTikTok |
+| **Bluesky (AT Protocol)** | 🟢 Opérationnel | Comptes `@handle.bsky.social`, URLs `bsky.app` | Posts Bluesky, médias attachés, résolution RSS publique |
 | **Instagram** | 🟢 Opérationnel | Profils publics Instagram (passerelle RSSHub) | Photos, carrousels, auteur, tags |
 | **Facebook** | 🟢 Opérationnel | Pages publiques Facebook (passerelle RSSHub) | Publications officielles, auteur, liens |
 | **LinkedIn** | 🟢 Opérationnel | Entreprises LinkedIn (passerelle RSSHub) | Actualités d'entreprises, offres de recrutement |
@@ -124,6 +150,7 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | Commande | Permissions | Description |
 | :--- | :--- | :--- |
 | `/feed list` | Tous | Affiche la liste des flux actifs sur le serveur |
+| `/feed menu` | Tous | Affiche un menu déroulant interactif pour s'abonner en 1 clic à plusieurs flux |
 | `/feed streamers` | Tous | Affiche le statut en temps réel (🔴 EN DIRECT ou ⚫ Hors ligne) de tous les streamers configurés |
 | `/feed add url:<url> channel:<#salon> [nom] [categorie] [tags] [intervalle]` | Admin | Ajoute un nouveau flux (RSS, YouTube, Reddit, X, Twitch...) |
 | `/feed presets` | Admin | Affiche le catalogue LootScraper et permet l'installation en 1 bouton |
@@ -139,16 +166,18 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 ## 6. Endpoints REST API (`/api/autofeeds` & `/api/webhooks`)
 
 - `GET /api/autofeeds` : Liste des flux configurés pour la guilde active.
-- `POST /api/autofeeds` : Création d'un flux (supporte `createThread`, `subscriberRoleId`, `notificationDelivery`).
+- `POST /api/autofeeds` : Création d'un flux (supporte `useWebhook`, `enableMediaProxy`, `ignoreShorts`, `aiSummary`, `aiTranslate`, `createThread`, `subscriberRoleId`, `notificationDelivery`).
 - `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit, Google News).
 - `POST /api/autofeeds/presets/install` : Installation d'un preset en 1-clic (`{ presetId, channelId }`).
-- `GET /api/autofeeds/providers` : Liste des 12 fournisseurs et capacités.
+- `GET /api/autofeeds/providers` : Liste des 13 fournisseurs et capacités.
 - `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `guild_id` ou `user_id`).
 - `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification (`channel`, `dm`, `both`, `role`).
 - `DELETE /api/autofeeds/subscriptions/:id` : Suppression d'une souscription.
-- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (options de stream, threads, rôle dédié, statut, intervalle, filtres, tags, couleur).
+- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (options de webhook, IA, filtres média, threads, rôle dédié, statut, intervalle, filtres, tags, couleur).
 - `DELETE /api/autofeeds/:id` : Suppression d'un flux.
 - `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
+- `POST /api/autofeeds/opml/import` : Import en masse d'un fichier OPML XML vers un salon cible.
+- `GET /api/autofeeds/opml/export` : Export de l'ensemble des flux d'un serveur au format standard OPML XML.
 - `POST /api/webhooks/twitch` : Webhook EventSub Twitch (challenge verification + notifications stream.online / stream.offline).
 - `GET /api/webhooks/youtube` : Challenge WebSub Hub YouTube.
 - `POST /api/webhooks/youtube` : Notification WebSub YouTube.
@@ -159,10 +188,10 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 
 Accessible sur le dashboard via la section **Modules** et **Configuration** :
 - **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.
-- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, badges `⚠️ En erreur (X/10)`, `🧵 Thread`, `🏷️ Rôle auto`, bouton de test direct ⚡ et modal d'ajout/édition avec gestion des threads et rôles d'abonnés.
+- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, boutons **Import OPML** et **Export OPML**, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, badges `⚠️ En erreur (X/10)`, `🧵 Thread`, `🏷️ Rôle auto`, bouton de test direct ⚡ et modal d'ajout/édition avec gestion des options avancées (Webhooks personnalisés, Résumés IA, Proxies multimédia, Filtre Shorts, Threads et Rôles d'abonnés).
 - **🎁 Catalogue & LootScraper** (`/modules/autofeeds/presets`) : Grille de cartes prêtes à l'emploi pour LootScraper (Epic, Steam, GOG, Prime, Itch.io) avec installation en 1-clic.
 - **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau complet des souscriptions membres avec badges colorés (Tag, Compte, Catégorie, Mot-clé, Flux), filtres personnels et création/suppression.
-- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 12 sources opérationnelles avec formats d'URL supportés et exemples.
+- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 13 sources opérationnelles avec formats d'URL supportés et exemples.
 - **⚙️ Configuration Globale** (`/config/autofeeds`) : Clés Twitch & YouTube par défaut, cadences d'interrogation (lives 2m, vidéos 15m, RSS 30m), seuils d'erreurs et salon de log Discord global.
 - **🛡️ Configuration Serveur** (`/panel/[guild]/config/autofeeds`) : Surcharges spécifiques par serveur (clés d'API dédiées, salon de logs serveur, alertes d'erreurs).
 
