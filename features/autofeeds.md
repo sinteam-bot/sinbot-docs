@@ -69,20 +69,52 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 | Fournisseur | Statut | Types de Cibles | Métadonnées extraites |
 | :--- | :---: | :--- | :--- |
 | **RSS / Atom Universel** | 🟢 Opérationnel | Tous sites, WordPress, blogs, LootScraper, XML | Titre, résumé HTML nettoyé, images/enclosures, tags XML, dates |
-| **YouTube** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture direct, auteur |
+| **YouTube Vidéos** | 🟢 Opérationnel | `@handle`, `UC...` Channel ID, Playlists | Titre de la vidéo, miniature HD, lien de lecture direct, auteur |
+| **YouTube Live** | 🟢 Opérationnel | `@handle/live`, chaînes /live, WebSub | Détection temps réel des lives, statut en direct, thumbnail, passage offline automatique |
 | **Reddit** | 🟢 Opérationnel | `r/subreddit`, URL Reddit | Miniatures Reddit, flairs convertis en tags, auteur |
 | **Google News** | 🟢 Opérationnel | Requêtes de recherche, sujets thématiques | Titre, source média, lien canonique |
+| **Twitch** | 🟢 Opérationnel | Chaînes Twitch, streamers | Statut live temps réel, jeu/catégorie, nombre de spectateurs, miniature, clôture in-place |
+| **Kick** | 🟢 Opérationnel | Chaînes Kick, streamers | Statut live API v2, aperçu de stream, catégorie de jeu, clôture in-place |
 | **X / Twitter** | 🟢 Opérationnel | Comptes `@user`, URLs `x.com` / `twitter.com`, Nitter | Tweets, retweets, liens officiels, hashtags convertis en tags |
 | **TikTok** | 🟢 Opérationnel | Comptes créateurs `@user`, URLs TikTok, ProxiTok | Vidéos, liens canoniques TikTok, auteur |
-| **Twitch** | 🟢 Opérationnel | Chaînes Twitch, streamers | Statut live temps réel, jeu/catégorie, nombre de spectateurs, miniature |
-| **Kick** | 🟢 Opérationnel | Chaînes Kick, streamers | Statut live, aperçu de stream, catégorie de jeu |
 | **Instagram** | 🟢 Opérationnel | Profils publics Instagram (passerelle RSSHub) | Photos, carrousels, auteur, tags |
 | **Facebook** | 🟢 Opérationnel | Pages publiques Facebook (passerelle RSSHub) | Publications officielles, auteur, liens |
 | **LinkedIn** | 🟢 Opérationnel | Entreprises LinkedIn (passerelle RSSHub) | Actualités d'entreprises, offres de recrutement |
 
 ---
 
-## 4. Commandes Slash Discord (`/feed` ou `/autofeed`)
+## 4. Cycle de Vie des Lives & Alertes en Direct
+
+### 4.1 Détection & Notification
+- Les flux en direct (`twitch`, `kick`, `youtube_live`) bénéficient d'un intervalle resserré par défaut de **2 minutes** (contre 15 min pour les vidéos et 30 min pour les flux RSS).
+- Lorsqu'une diffusion commence, un message Discord riche est publié dans le salon cible avec mentions combinées (rôle ping global + souscripteurs individuels du streamer).
+- Le message personnalisé accepte les variables dynamiques :
+  - `{streamer}` : nom du diffuseur
+  - `{title}` : titre du live
+  - `{game}` : jeu ou catégorie en cours
+  - `{viewers}` : nombre de spectateurs
+  - `{url}` : lien direct vers la diffusion
+  - `{mentions}` : pings des abonnés et rôles
+- La session active est sauvegardée dans la table `autofeed_live_sessions` avec l'ID du message Discord envoyé.
+
+### 4.2 Clôture In-Place sans Ghost-Ping
+- Dès que le streamer coupe son live, le bot détecte l'état hors ligne.
+- Le message Discord initial est **mis à jour sur place (edit in-place)** :
+  - Le titre devient `⚫ [OFFLINE] [Streamer] n'est plus en direct`.
+  - La couleur passe en gris discret (`#747F8D`).
+  - La durée totale de la diffusion (ex: `2h 15min`) et le dernier jeu joué sont affichés.
+  - Le bouton d'action devient `🎬 Voir la chaîne / Replay`.
+  - Le contenu textuel de mentions est **vidé** pour éliminer tout risque de *ghost-ping*.
+- La session est archivée en base de données.
+
+### 4.3 Webhooks Entrants & Fallback Polling
+- **Twitch EventSub** (`POST /api/webhooks/twitch` et `/api/autofeeds/webhooks/twitch`) : supporte la vérification du challenge (`webhook_callback_verification`) et les événements `stream.online` / `stream.offline`.
+- **YouTube WebSub (PubSubHubbub)** (`GET/POST /api/webhooks/youtube`) : supporte la vérification `hub.challenge` et l'ingestion XML immédiate.
+- En cas de coupure ou d'absence de configuration webhook, le cycle de scrutation en arrière-plan (`pollFeeds`) assure le fallback transparent automatique.
+
+---
+
+## 5. Commandes Slash Discord (`/feed` ou `/autofeed`)
 
 | Commande | Permissions | Description |
 | :--- | :--- | :--- |
@@ -97,27 +129,31 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 
 ---
 
-## 5. Endpoints REST API (`/api/autofeeds`)
+## 6. Endpoints REST API (`/api/autofeeds` & `/api/webhooks`)
 
 - `GET /api/autofeeds` : Liste des flux configurés pour la guilde active.
 - `POST /api/autofeeds` : Création d'un flux (accepte syntaxe complète camelCase ou snake_case).
 - `GET /api/autofeeds/presets` : Catalogue des presets disponibles (LootScraper, Reddit, Google News).
 - `POST /api/autofeeds/presets/install` : Installation d'un preset en 1-clic (`{ presetId, channelId }`).
-- `GET /api/autofeeds/providers` : Liste des 11 fournisseurs et capacités.
+- `GET /api/autofeeds/providers` : Liste des 12 fournisseurs et capacités.
 - `GET /api/autofeeds/subscriptions` : Abonnements de la guilde (filtrables par `guild_id` ou `user_id`).
 - `POST /api/autofeeds/subscriptions` : Création d'une souscription avec mode de notification et filtres personnels.
 - `DELETE /api/autofeeds/subscriptions/:id` : Suppression d'une souscription.
-- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (statut, intervalle, filtres, tags, couleur).
+- `PATCH /api/autofeeds/:id` : Mise à jour d'un flux (statut, intervalle, filtres, tags, couleur, message personnalisé, ping rôle).
 - `DELETE /api/autofeeds/:id` : Suppression d'un flux.
 - `POST /api/autofeeds/:id/test` : Test d'envoi immédiat du flux sans impacter l'historique anti-doublon.
+- `POST /api/webhooks/twitch` : Webhook EventSub Twitch (challenge verification + notifications stream.online / stream.offline).
+- `GET /api/webhooks/youtube` : Challenge WebSub Hub YouTube.
+- `POST /api/webhooks/youtube` : Notification WebSub YouTube.
 
 ---
 
-## 6. Interface Dashboard Nuxt 4
+## 7. Interface Dashboard Nuxt 4
 
 Accessible sur le dashboard via la section **Modules** :
 - **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.
-- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtrage par catégorie, switch actif/pause, bouton de test direct ⚡ et modal d'ajout/édition avec sélecteur de salon Discord.
+- **📰 Flux configurés** (`/modules/autofeeds/list`) : Grille de gestion, filtre rapide `🔴 Directs & Lives`, badges d'état `LIVE`, switch actif/pause, bouton de test direct ⚡ et modal d'ajout/édition avec section accordéon dédiée aux options de stream.
 - **🎁 Catalogue & LootScraper** (`/modules/autofeeds/presets`) : Grille de cartes prêtes à l'emploi pour LootScraper (Epic, Steam, GOG, Prime, Itch.io) avec installation en 1-clic.
 - **🔔 Abonnements & Alertes** (`/modules/autofeeds/subscriptions`) : Tableau complet des souscriptions membres avec badges colorés (Tag, Compte, Catégorie, Mot-clé, Flux), filtres personnels et création/suppression.
-- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 11 sources opérationnelles avec formats d'URL supportés et exemples.
+- **🌐 Fournisseurs & Architecture** (`/modules/autofeeds/providers`) : Fiches techniques des 12 sources opérationnelles avec formats d'URL supportés et exemples.
+

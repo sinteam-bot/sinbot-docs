@@ -27,6 +27,14 @@
   - [x] Presets LootScraper (Tous les jeux gratuits, Epic, Steam, GOG, Prime Gaming, Itch.io)
   - [x] Presets Reddit (r/FreeGameFindings, r/GameDeals)
   - [x] Installation en 1-clic depuis le dashboard Nuxt ou via Discord `/feed presets`
+- [x] **Gestion des Streams & Lives (Twitch, Kick, YouTube Live)**
+  - [x] Connecteur dédié `youtube_live` pour la détection /live et WebSub
+  - [x] Intervalles optimisés par plateforme (lives: 2 min, vidéos: 15 min, RSS: 30 min)
+  - [x] Table `autofeed_live_sessions` pour le suivi des diffusions en cours
+  - [x] Clôture in-place des messages Discord (`⚫ [OFFLINE]`, durée, dernier jeu, replay, zéro ghost-ping)
+  - [x] Support des webhooks entrants : Twitch EventSub et YouTube WebSub avec fallback polling automatique
+  - [x] Placeholders dynamiques `{streamer}`, `{title}`, `{game}`, `{viewers}`, `{url}`, `{mentions}`
+  - [x] Dashboard Nuxt 4 : filtre rapide `🔴 Directs & Lives`, badges d'état et accordéon d'options de stream
 - [x] **Commandes Slash Discord**
   - [x] `/feed add`, `/feed list`, `/feed presets`, `/feed delete`, `/feed test`
   - [x] `/feed subscribe`, `/feed unsubscribe`, `/feed my-subscriptions`
@@ -34,16 +42,18 @@
 - [x] **API REST & Contrôleur**
   - [x] Routes CRUD `/api/autofeeds`
   - [x] Routes `/api/autofeeds/presets` et `/api/autofeeds/presets/install`
-  - [x] Routes `/api/autofeeds/providers`
+  - [x] Routes `/api/autofeeds/providers` (12 connecteurs)
   - [x] Routes `/api/autofeeds/subscriptions`
   - [x] Route `/api/autofeeds/:id/test`
+  - [x] Routes Webhooks `/api/webhooks/twitch` et `/api/webhooks/youtube` (et `/api/autofeeds/webhooks/*`)
 - [x] **Dashboard Frontend Nuxt 4**
   - [x] Vue d'ensemble (`/modules/autofeeds/overview`)
-  - [x] Gestion des flux (`/modules/autofeeds/list`)
+  - [x] Gestion des flux (`/modules/autofeeds/list`) avec filtre `🔴 Directs & Lives`
   - [x] Presets LootScraper (`/modules/autofeeds/presets`)
   - [x] Souscriptions membres (`/modules/autofeeds/subscriptions`)
-  - [x] Fournisseurs (`/modules/autofeeds/providers`)
+  - [x] Fournisseurs (`/modules/autofeeds/providers`) avec fiche technique YouTube Live
 - [x] **Validation & Tests**
-  - [x] 21 tests unitaires et d'intégration vitest dans `tests/autofeeds-advanced.test.js`
-  - [x] 102/102 fichiers de tests backend validés (886 tests)
-  - [x] Compilation et build de production Nuxt 4 validés
+  - [x] 29 tests unitaires et d'intégration vitest dans `tests/autofeeds-advanced.test.js`
+  - [x] 102/102 fichiers de tests backend validés (894 tests au vert)
+  - [x] Compilation et build de production Nuxt 4 validés (91 routes pré-générées)
+
