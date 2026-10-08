@@ -1,6 +1,6 @@
 # Feature : Flux RSS, LootScraper & Alertes Multi-Sources
 
-> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (21 tests vitest dédiés, 102/102 suites au vert) et intégré au Dashboard Nuxt 3.
+> **Module** : `util_autofeeds` — **Statut** : Implémenté, testé (21 tests vitest dédiés, 102/102 suites au vert) et intégré au Dashboard Nuxt 4.
 
 ---
 
@@ -113,7 +113,7 @@ Le bot s'appuie sur le pattern centralisé **`ProviderRegistry`** qui détecte a
 
 ---
 
-## 6. Interface Dashboard Nuxt 3
+## 6. Interface Dashboard Nuxt 4
 
 Accessible sur le dashboard via la section **Modules** :
 - **📊 Vue d'ensemble** (`/modules/autofeeds/overview`) : Statistiques dynamiques, héro LootScraper, flux récents et guide des commandes.

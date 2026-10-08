@@ -37,7 +37,7 @@
   - [x] Routes `/api/autofeeds/providers`
   - [x] Routes `/api/autofeeds/subscriptions`
   - [x] Route `/api/autofeeds/:id/test`
-- [x] **Dashboard Frontend Nuxt 3**
+- [x] **Dashboard Frontend Nuxt 4**
   - [x] Vue d'ensemble (`/modules/autofeeds/overview`)
   - [x] Gestion des flux (`/modules/autofeeds/list`)
   - [x] Presets LootScraper (`/modules/autofeeds/presets`)
@@ -46,4 +46,4 @@
 - [x] **Validation & Tests**
   - [x] 21 tests unitaires et d'intégration vitest dans `tests/autofeeds-advanced.test.js`
   - [x] 102/102 fichiers de tests backend validés (886 tests)
-  - [x] Compilation et build de production Nuxt 3 validés
+  - [x] Compilation et build de production Nuxt 4 validés
